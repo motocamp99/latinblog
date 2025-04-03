@@ -50,7 +50,7 @@ const fetchContent = async () => {
 
 const { data } = await useAsyncData('content', () =>
     queryCollection('blog')
-        /*.where('featured', '=', true)*/
+        .where('published', '=', true)
         .order('date', 'DESC')
         .all()
 );
