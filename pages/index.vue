@@ -58,6 +58,19 @@ const { data } = await useAsyncData('content', () =>
 console.log('datacontent', data)
 }
 
+const fetchPublishedArticles = async () => {
+
+const { data } = await useAsyncData('content', () =>
+    queryCollection('blog')
+        .where('published', '=', true)
+        /*.order('date', 'DESC')*/
+        .all()
+);
+
+console.log('publishedArticles', data)
+console.log('publishedArticles value', data.value)
+}
+
 const fetchFeaturedArticles = async () => {
     const { data } = await useAsyncData('featured', () =>
         queryCollection('blog')
@@ -80,6 +93,7 @@ onMounted(async () => {
 
     await fetchContent()
     await fetchFeaturedArticles()
+    await fetchPublishedArticles()
 
     //await fetchContent()
     //await fetchFeaturedArticles()
