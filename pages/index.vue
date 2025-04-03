@@ -39,8 +39,10 @@ const fetchFeaturedArticles = async () => {
             .all()
     );
 
-    console.log(data)
+    console.log('featured', data)
     featuredArticles.value = data.value;
+    console.log('featured articles', featuredArticles.value)
+    console.log('featured articles2', featuredArticles)
 };
 
 const fetchFR = async () => {
