@@ -21,6 +21,17 @@ const { data } = await useAsyncData('blog', () => {
 
 //console.log('data1', data)
 
+const fetchArticle= async(slug)=>{
+    const { data } = await useAsyncData('article', () =>
+        queryCollection('blog')
+        .path('/articles/' + slug)
+        .first()
+    );
+
+    console.log('firstarticle', data)
+    console.log('firstarticle2', data.value)
+}
+
 
 const fetchContent = async () => {
 
@@ -71,6 +82,7 @@ onMounted(async () => {
 
     await fetchContent()
     await fetchFeaturedArticles()
+    await fetchArticle('article2')
     // await fetchFR().then(res=>console.log('res', res))
 
 
