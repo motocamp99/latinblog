@@ -11,20 +11,20 @@
   },
   "dependencies": {
     "@nuxt/content": "^3.2.2",
-    "@nuxt/image": "^1.10.0",
+    "@nuxt/image": "^1.8.1",
     "@vueuse/core": "^13.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "embla-carousel-vue": "^8.5.2",
     "lucide-vue-next": "^0.484.0",
-    "nuxt": "^3.16.1",
+    "nuxt": "^3.14.1592",
     "reka-ui": "^2.2.0",
     "shadcn-nuxt": "^1.0.3",
     "tailwind-merge": "^3.0.2",
     "tailwindcss-animate": "^1.0.7",
-    "vue": "^3.5.13",
+    "vue": "latest",
     "vue-easy-lightbox": "^1.19.0",
-    "vue-router": "^4.5.0"
+    "vue-router": "latest"
   },
   "devDependencies": {
     "@nuxtjs/tailwindcss": "^6.13.2"
