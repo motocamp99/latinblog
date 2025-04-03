@@ -1,7 +1,7 @@
 <template>
     <div>
         testinfg
-        {{ featuredArticles }}
+       <!-- {{ featuredArticles }}-->
     </div>
 </template>
 
@@ -32,7 +32,7 @@ const fetchArticle= async(slug)=>{
     console.log('firstarticle2', data.value)
 }
 
-
+/*
 const fetchContent = async () => {
 
     const { data } = await useAsyncData('content', () =>
@@ -44,14 +44,26 @@ const fetchContent = async () => {
     );
 
     console.log('datacontent', data)
-};
+};*/
+
+const fetchContent = async () => {
+
+const { data } = await useAsyncData('content', () =>
+    queryCollection('blog')
+        /*.where('featured', '=', true)*/
+        .order('date', 'DESC')
+        .all()
+);
+
+console.log('datacontent', data)
+}
 
 const fetchFeaturedArticles = async () => {
     const { data } = await useAsyncData('featured', () =>
         queryCollection('blog')
             .where('featured', '=', true)
-            .order('date', 'DESC')
-            .limit(12)
+            /*.order('date', 'DESC')*/
+            /*.limit(12)*/
             .all()
     );
 
@@ -61,49 +73,18 @@ const fetchFeaturedArticles = async () => {
     console.log('featured articles2', featuredArticles)
 };
 
-/*
-const fetchFR = async () => {
-    const { data, error: fetchError } = await useFetch('/api/articles');
 
-    if (fetchError.value) {
-        throw fetchError.value;
-    }
-
-    console.log(data)
-
-    return data
-
-}
-
-*/
-
+await fetchContent()
 
 onMounted(async () => {
 
-    await fetchContent()
-    await fetchFeaturedArticles()
-    await fetchArticle('article2')
-    // await fetchFR().then(res=>console.log('res', res))
-
+    //await fetchContent()
+    //await fetchFeaturedArticles()
+    //await fetchArticle('article2')
 
     /*
-    const { data } = await useAsyncData('blog', () => {
-        return queryCollection('blog').all()
-    })
-    */
-
-    /*
-    const query = queryCollection('blog')
-        .where('published', '=', true)
-        .order('date', 'DESC');
-
-    const { data } = await useAsyncData('blog', () => query.all());
-
-    console.log('data10', data)*/
-
     const { data } = await useAsyncData('blog', () => queryCollection('blog').all())
-    console.log('data', data)
-
+    console.log('data', data)*/
 
 })
 
