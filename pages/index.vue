@@ -23,9 +23,12 @@ const { data } = await useAsyncData('blog', () => {
 
 const fetchContent = async () => {
 
-    const { data } = await useAsyncData('content', () => {
-        return queryCollection('content').all()
-    });
+    const { data } = await useAsyncData('content', () =>
+        queryCollection('content')
+            .order('date', 'DESC')
+            .limit(12)
+            .all()
+    );
 
     console.log('data', data)
 };
@@ -45,6 +48,7 @@ const fetchFeaturedArticles = async () => {
     console.log('featured articles2', featuredArticles)
 };
 
+/*
 const fetchFR = async () => {
     const { data, error: fetchError } = await useFetch('/api/articles');
 
@@ -58,14 +62,14 @@ const fetchFR = async () => {
 
 }
 
-
+*/
 
 
 onMounted(async () => {
 
     await fetchContent()
     await fetchFeaturedArticles()
-    await fetchFR().then(res=>console.log('res', res))
+    // await fetchFR().then(res=>console.log('res', res))
 
 
     /*
