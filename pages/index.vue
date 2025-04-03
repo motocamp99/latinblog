@@ -13,6 +13,8 @@ const { data } = await useAsyncData('blog', () => queryCollection('blog').all())
 console.log(data)
 */
 
+//new
+
 const { data } = await useAsyncData('blog', () => {
     return queryCollection('blog').all()
 })
