@@ -1,6 +1,7 @@
 <template>
     <div>
         testinfg
+        {{ featuredArticles }}
     </div>
 </template>
 
@@ -24,13 +25,14 @@ const { data } = await useAsyncData('blog', () => {
 const fetchContent = async () => {
 
     const { data } = await useAsyncData('content', () =>
-        queryCollection('content')
+        queryCollection('blog')
+            .where('featured', '=', true)
             .order('date', 'DESC')
-            .limit(12)
+            .limit(2)
             .all()
     );
 
-    console.log('data', data)
+    console.log('datacontent', data)
 };
 
 const fetchFeaturedArticles = async () => {
