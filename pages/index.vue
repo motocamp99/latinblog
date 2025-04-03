@@ -74,9 +74,11 @@ const fetchFeaturedArticles = async () => {
 };
 
 
-await fetchContent()
+
 
 onMounted(async () => {
+
+    await fetchContent()
 
     //await fetchContent()
     //await fetchFeaturedArticles()
