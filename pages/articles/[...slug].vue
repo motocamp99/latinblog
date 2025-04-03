@@ -1,14 +1,35 @@
 <template>
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- Banner Image with proper spacing -->
+
+        <div v-if="loaded">
+            test
+            <div class="p-4" id="article-card">
+                <ContentRenderer :value="article" id="article-text" />
+            </div>
+
+        </div>
+        <div v-else class="flex justify-center items-center h-64">
+            <svg class="animate-spin h-8 w-8 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none"
+                viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                </path>
+            </svg>
+            <span class="sr-only">Cargando...</span>
+
+        </div>
+
+
+        <!--
         <div class="mb-12">
             <BannerImageComponent :imageUrl="data.image" :title="data.title" :subtitle="data.meta?.subtitle" />
         </div>
 
         <div style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
-            <!-- Main Content (Right Column) -->
+           
             <div class="flex-1 w-7xl">
-                <!-- Article Metadata -->
+          
                 <Card class="p-6 mb-8 bg-secondary" style="width: 90vw;">
                     <div class="grid md:grid-cols-2 gap-8">
                         <div>
@@ -42,7 +63,7 @@
             </div>
 
             <div style="display: flex; flex-direction: row; width: 90vw; position: relative; gap:100px">
-                <!-- Sticky Table of Contents -->
+                
                 <div style="width: 30vw; position: sticky; top: 20px; align-self: flex-start; max-height: 70vh; overflow: auto;">
                     <Card class="p-4 bg-secondary">
                         <h2 class="text-2xl font-semibold mb-4">Tabla de Contenido</h2>
@@ -57,7 +78,7 @@
                     </Card>
                 </div>
 
-                <!-- Article Content -->
+          
                 <div style="width: 60vw;">
                     <div class="p-4" id="article-card">
                         <ContentRenderer :value="data" id="article-text" />
@@ -65,16 +86,49 @@
                 </div>
             </div>
         </div>
+        -->
     </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
+
 import { Card } from '@/components/ui/card'
-
+import { ref, onMounted } from 'vue';
+let article = null
 const slug = useRoute().params.slug[0].toString()
+const loaded=ref(false)
+/*
 const { data } = await useAsyncData(() => queryCollection('blog').path('/articles/' + slug).first())
+*/
 
-const formatDate = (dateString: string) => {
+const fetchContent = async () => {
+
+    const { data } = await useAsyncData('content2', () =>
+        queryCollection('blog')
+            .where('published', '=', true)
+            /*.order('date', 'DESC')*/
+            .all()
+    );
+
+    console.log('datacontent', data)
+}
+
+
+const fetchArticle = async (slug) => {
+    const { data } = await useAsyncData('article', () =>
+        queryCollection('blog')
+            .path('/articles/' + slug)
+            .first()
+    );
+
+    article=data.value
+    console.log('firstarticle', data)
+    console.log('firstarticle2', data.value)
+}
+
+
+
+const formatDate = (dateString) => {
     const date = new Date(dateString)
     return date.toLocaleDateString('es-ES', {
         year: 'numeric',
@@ -83,6 +137,7 @@ const formatDate = (dateString: string) => {
     })
 }
 
+/*
 const socialLinks = computed(() => ({
     ig: data.value.meta?.ig,
     fb: data.value.meta?.fb,
@@ -100,6 +155,15 @@ useSeoMeta({
     ogImage: data.value.image,
     twitterCard: 'summary_large_image'
 })
+*/
+
+onMounted(async () => {
+    await fetchContent()
+    await fetchArticle(slug)
+    loaded.value=true
+})
+
+
 </script>
 
 
@@ -114,7 +178,7 @@ useSeoMeta({
     line-height: 1.7;
 }
 
-#article-text p{
+#article-text p {
     margin: 15px;
 }
 
@@ -123,9 +187,9 @@ useSeoMeta({
     margin-bottom: 10vh !important;
 }
 
-#article-text h2{
-    color:rgb(81, 81, 81);
-    font-weight:bold;
+#article-text h2 {
+    color: rgb(81, 81, 81);
+    font-weight: bold;
 }
 
 /* Additional TOC styling */

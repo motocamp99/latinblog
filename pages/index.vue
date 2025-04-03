@@ -99,20 +99,6 @@ const fetchBannerImages = async () => {
     bannerImages.value = data.value;
     console.log('banners', bannerImages.value)
 };
-/*
-
-const fetchArticle = async (slug) => {
-    const { data } = await useAsyncData('article', () =>
-        queryCollection('blog')
-            .path('/articles/' + slug)
-            .first()
-    );
-
-    console.log('firstarticle', data)
-    console.log('firstarticle2', data.value)
-}
-
-*/
 
 const fetchContent = async () => {
 
