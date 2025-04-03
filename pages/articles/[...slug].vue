@@ -5,7 +5,7 @@
 
             <div class="mb-12">
                 <BannerImageComponent :imageUrl="article.image" :title="article.title"
-                    :subtitle="article.meta.subtitle" />
+                    :subtitle="article.description && article.description.length>100 ? article.description.slice(0,100) : article.description" />
             </div>
 
             <div style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
@@ -20,20 +20,20 @@
                             </div>
                             <div>
                                 <h2 class="text-2xl font-semibold mb-3">Detalles</h2>
-                                <ul class="space-y-3 text-muted-foreground">
+                                <ul class="space-y-3">
                                     <li class="flex">
-                                        <span class="font-medium w-24">Fecha:</span>
+                                        <span class="detail font-medium w-24">Fecha:</span>
                                         <span>{{ formatDate(article.date) }}</span>
                                     </li>
                                     <li class="flex">
-                                        <span class="font-medium w-24">Categoría:</span>
+                                        <span class="detail font-medium w-24">Categoría:</span>
                                         <NuxtLink :to="`/revista/category/${article.category}`"
                                             class="text-primary hover:underline">
                                             {{ article.category }}
                                         </NuxtLink>
                                     </li>
                                     <li class="flex items-start">
-                                        <span class="font-medium w-24">Etiquetas:</span>
+                                        <span class="detail font-medium w-24">Etiquetas:</span>
                                         <ArticleTagsComponent :tags="article.tags || []" />
                                     </li>
                                 </ul>
@@ -47,7 +47,7 @@
                 <div style="display: flex; flex-direction: row; width: 90vw; position: relative; gap:100px">
 
                     <div
-                        style="width: 30vw; position: sticky; top: 20px; align-self: flex-start; max-height: 70vh; overflow: auto;">
+                        style="width: 30vw; position: sticky; top: 80px; align-self: flex-start; max-height: 70vh; overflow: auto;">
                         <Card class="p-4 bg-secondary">
                             <h2 class="text-2xl font-semibold mb-4">Tabla de Contenido</h2>
                             <ul style="display: flex; flex-direction: column; gap: 7px;">
@@ -80,76 +80,7 @@
                 </path>
             </svg>
             <span class="sr-only">Cargando...</span>
-
         </div>
-
-
-        <!--
-        <div class="mb-12">
-            <BannerImageComponent :imageUrl="data.image" :title="data.title" :subtitle="data.meta?.subtitle" />
-        </div>
-
-        <div style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
-           
-            <div class="flex-1 w-7xl">
-          
-                <Card class="p-6 mb-8 bg-secondary" style="width: 90vw;">
-                    <div class="grid md:grid-cols-2 gap-8">
-                        <div>
-                            <h2 class="text-2xl font-semibold mb-3">Descripción</h2>
-                            <p class="text-muted-foreground">{{ data.description }}</p>
-                        </div>
-                        <div>
-                            <h2 class="text-2xl font-semibold mb-3">Detalles</h2>
-                            <ul class="space-y-3 text-muted-foreground">
-                                <li class="flex">
-                                    <span class="font-medium w-24">Fecha:</span>
-                                    <span>{{ formatDate(data.date) }}</span>
-                                </li>
-                                <li class="flex">
-                                    <span class="font-medium w-24">Categoría:</span>
-                                    <NuxtLink :to="`/revista/category/${data.category}`"
-                                        class="text-primary hover:underline">
-                                        {{ data.category }}
-                                    </NuxtLink>
-                                </li>
-                                <li class="flex items-start">
-                                    <span class="font-medium w-24">Etiquetas:</span>
-                                    <ArticleTagsComponent :tags="data.tags || []" />
-                                </li>
-                            </ul>
-
-                            <SocialMediaLinks v-if="socialLinks" :socialLinks="socialLinks" class="mt-4" />
-                        </div>
-                    </div>
-                </Card>
-            </div>
-
-            <div style="display: flex; flex-direction: row; width: 90vw; position: relative; gap:100px">
-                
-                <div style="width: 30vw; position: sticky; top: 20px; align-self: flex-start; max-height: 70vh; overflow: auto;">
-                    <Card class="p-4 bg-secondary">
-                        <h2 class="text-2xl font-semibold mb-4">Tabla de Contenido</h2>
-                        <ul style="display: flex; flex-direction: column; gap: 7px;">
-                            <li v-for="link in data.body.toc.links" :key="link.id">
-                                <a :href="`#${link.id}`"
-                                    class="text-md text-muted-foreground hover:text-primary transition-colors block py-1">
-                                    {{ link.text }}
-                                </a>
-                            </li>
-                        </ul>
-                    </Card>
-                </div>
-
-          
-                <div style="width: 60vw;">
-                    <div class="p-4" id="article-card">
-                        <ContentRenderer :value="data" id="article-text" />
-                    </div>
-                </div>
-            </div>
-        </div>
-        -->
     </div>
 </template>
 
@@ -160,9 +91,30 @@ import { ref, onMounted } from 'vue';
 let article = ref({})
 const slug = useRoute().params.slug[0].toString()
 const loaded = ref(false)
+
 /*
-const { data } = await useAsyncData(() => queryCollection('blog').path('/articles/' + slug).first())
+useHead([
+    {
+        rel: 'stylesheet',
+        href: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css',
+        integrity: 'sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==',
+        crossorigin: 'anonymous',
+        referrerpolicy: "no-referrer"
+    }
+])
 */
+
+useHead({
+    link: [
+        {
+            rel: 'stylesheet',
+            href: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css',
+            integrity: 'sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==',
+            crossorigin: 'anonymous',
+            referrerPolicy: 'no-referrer'
+        }
+    ]
+})
 
 const fetchContent = async () => {
 
@@ -173,7 +125,7 @@ const fetchContent = async () => {
             .all()
     );
 
-    console.log('datacontent', data)
+    console.log('datacontent')
 }
 
 
@@ -200,29 +152,31 @@ const formatDate = (dateString) => {
     })
 }
 
-/*
+
 const socialLinks = computed(() => ({
-    ig: data.value.meta?.ig,
-    fb: data.value.meta?.fb,
-    onlyfans: data.value.meta?.onlyfans,
-    chaturbate: data.value.meta?.chaturbate,
-    x: data.value.meta?.x,
-    phub: data.value.meta?.phub,
+    ig: article.value.meta?.ig,
+    fb: article.value.meta?.fb,
+    onlyfans: article.value.meta?.onlyfans,
+    chaturbate: article.value.meta?.chaturbate,
+    x: article.value.meta?.x,
+    phub: article.value.meta?.phub,
 }))
 
-useSeoMeta({
-    title: `${data.value.title} | Latin Fans Revista`,
-    description: data.value.description,
-    ogTitle: `${data.value.title} | Latin Fans Revista`,
-    ogDescription: data.value.description,
-    ogImage: data.value.image,
-    twitterCard: 'summary_large_image'
-})
-*/
 
 onMounted(async () => {
     await fetchContent()
     await fetchArticle(slug)
+
+
+    useSeoMeta({
+        title: ` Latin Fans | ${slug}`,
+        description: article.value.description,
+        ogTitle: `${article.value.title} | Latin Fans`,
+        ogDescription: article.value.description,
+        ogImage: article.value.image,
+        twitterCard: 'summary_large_image'
+    })
+
     loaded.value = true
 })
 
@@ -232,6 +186,11 @@ onMounted(async () => {
 
 <style>
 /* Keep your existing styles */
+
+.detail{
+    margin-right: 10px;
+}
+
 #article-card {
     width: 60vw;
 }
@@ -258,7 +217,7 @@ onMounted(async () => {
 /* Additional TOC styling */
 .toc-container {
     position: sticky;
-    top: 20px;
+    top: 60px;
     /*height: fit-content;*/
     max-height: 40vh;
     overflow-y: scroll;

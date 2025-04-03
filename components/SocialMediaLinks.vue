@@ -1,48 +1,95 @@
 <template>
-    <div class="social-links">
-        <h3 class="text-lg font-semibold mb-3">Redes Sociales</h3>
-        <div class="flex flex-wrap gap-2">
-            <Badge v-for="(link, platform) in socialLinks" v-if="link" :key="platform" variant="outline"
-                class="hover:bg-accent transition-colors">
-                <a :href="link" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2">
-                   <!--- <Icon :name="getIconName(platform)" class="w-4 h-4" />-->
-                    <span>@{{ getUsername(link) }}</span>
+    <div v-if="hasSocialLinks" class="social-media-links">
+        <h2 class="text-2xl font-semibold mb-3">Redes Sociales</h2>
+        <ul>
+            <li v-for="(link, platform) in socialLinks" :key="platform">
+                <a v-if="link" :href="link" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
+                    <i :class="getIconClass(platform)" style="color: black;"></i>
+                    <h4 class="text-gray-600">@{{ getUsername(link) }}</h4>
                 </a>
-            </Badge>
-        </div>
+            </li>
+        </ul>
     </div>
 </template>
 
-<script setup lang="ts">
-import { Badge } from '@/components/ui/badge'
-
+<script setup>
 const props = defineProps({
     socialLinks: {
-        type: Object as PropType<{
-            ig?: string
-            fb?: string
-            x?: string
-        }>,
-        default: () => ({})
-    }
-})
+        type: Object,
+        default: () => ({}),
+    },
+});
 
-const getIconName = (platform: string) => {
-    const icons: Record<string, string> = {
-        ig: 'ri:instagram-line',
-        fb: 'ri:facebook-line',
-        x: 'ri:twitter-x-line'
-    }
-    return icons[platform] || 'ri:share-line'
-}
+// Check if there are any social links
+const hasSocialLinks = computed(() => {
+    return Object.values(props.socialLinks).some(link => link);
+});
 
-const getUsername = (url: string) => {
+// Get the appropriate Font Awesome icon for each platform
+const getIconClass = (platform) => {
+    const icons = {
+        ig: 'fa-brands fa-instagram',
+        fb: 'fa-brands fa-facebook',
+        telegram: 'fa-brands fa-telegram',
+        tiktok: 'fa-brands fa-tiktok',
+        whatsapp: 'fa-brands fa-whatsapp',
+        line: 'fa-brands fa-line',
+        skype: 'fa-brands fa-skype',
+        x: 'fa-brands fa-x-twitter',
+        tumblr: 'fa-brands fa-tumblr',
+        threads: 'fa-brands fa-threads',
+        reddit: 'fa-brands fa-reddit',
+        snapchat: 'fa-brands fa-snapchat',
+        chaturbate: 'fa-solid fa-circle-user', // Fallback for Chaturbate
+        phub: 'fa-solid fa-circle-user', // Fallback for Pornhub
+    };
+    return icons[platform] || 'fa-solid fa-circle-user'; // Default fallback
+};
+
+// Extract the username from the URL
+const getUsername = (url) => {
     try {
-        const urlObj = new URL(url)
-        const pathParts = urlObj.pathname.split('/').filter(part => part)
-        return pathParts[pathParts.length - 1]
-    } catch {
-        return 'usuario'
+        const urlObj = new URL(url);
+        const pathParts = urlObj.pathname.split('/').filter(part => part); // Remove empty parts
+        return pathParts[pathParts.length - 1]; // Get the last part of the path
+    } catch (error) {
+        return 'username'; // Fallback if URL parsing fails
     }
-}
+};
 </script>
+
+<style scoped>
+.social-media-links {
+    margin-top: 20px;
+}
+
+.social-media-links h2 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+.social-media-links ul {
+    padding-left: 0;
+}
+
+.social-media-links li {
+    margin-bottom: 5px;
+}
+
+.social-media-links a {
+    color: #007bff;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.social-media-links a:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+.social-media-links i {
+    font-size: 1.2rem;
+}
+</style>

@@ -10,7 +10,7 @@
             </Badge>
 
             <!-- Other tags -->
-            <Badge v-for="(count, tag) in tags" :key="tag" :variant="selectedTag === tag ? 'default' : 'secondary'"
+            <Badge v-for="(count, tag) in tags" :key="tag" :variant="selectedTag === tag ? 'default' : 'primary'"
                 class="cursor-pointer transition-colors hover:opacity-80" @click="selectTag(tag)">
                 <NuxtLink :to="isCategory ? `/revista/category/${tag}` : `/revista/etiquetas/${tag}`"
                     class="text-current no-underline">
