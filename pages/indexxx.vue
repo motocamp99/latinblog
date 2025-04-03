@@ -129,38 +129,6 @@ const fetchAllArticles = async () => {
 
         loaded.value=true
 
-        // const query = queryCollection('blog').order('date', 'DESC');
-        /*.where('published', '=', true)*/
-
-
-        /*
-        const { data } = await useAsyncData('blog', () => query.all());
-
-        console.log('data value', data)
-
-        allArticles.value = data.value;
-        */
-
-        /*
-        const { data } = await useAsyncData('blog', () => {
-            return queryCollection('blog').all()
-        })
-
-        Promise.all([data]).then(res=>{
-            allArticles.value=data.value
-            console.log(allArticles.value)
-        })
-
-        
-        console.log('all articles', allArticles)
-        console.log('all articles', allArticles)
-
-
-        console.log('data', data)
-        console.log('data value', data.value)
-        */
-
-
         // Extract unique tags
         const tagCounts = {};
         // Extract unique categories
@@ -170,7 +138,7 @@ const fetchAllArticles = async () => {
 
         console.log('articlesss', allArticles.value)
 
-        /*
+        
         allArticles.value.forEach((article) => {
             // Process tags
             if (article['tags']) {
@@ -216,7 +184,7 @@ const fetchAllArticles = async () => {
         }));
 
         console.log('Categories with featured articles:', categoryArticles.value);
-        */
+        
 
     } catch (error) {
 

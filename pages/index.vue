@@ -1,7 +1,14 @@
 <template>
     <div v-if="loaded">
-        testinfg
-        {{ allArticles }}
+        
+        <!--{{ allArticles }}-->
+
+        <section class="mb-12 px-4 lg:px-24" v-if="bannerImages">
+            <SimpleHero :images="bannerImages" />
+        </section>
+    </div>
+    <div v-else>
+        ...Loading
     </div>
 </template>
 
@@ -11,16 +18,14 @@ import { ref, onMounted } from 'vue';
 
 const allArticles = ref([]);
 const loaded = ref(false);
+const bannerImages = ref([])
 
-
-//new
+const fetchBannerImages = async () => {
+    const { data } = await useFetch('/assets/images/banner/hero-banners.json');
+    bannerImages.value = data.value;
+    console.log('banners', bannerImages.value)
+};
 /*
-const { data } = await useAsyncData('blog', () => {
-    return queryCollection('blog').all()
-})
-*/
-
-//console.log('data1', data)
 
 const fetchArticle = async (slug) => {
     const { data } = await useAsyncData('article', () =>
@@ -33,7 +38,7 @@ const fetchArticle = async (slug) => {
     console.log('firstarticle2', data.value)
 }
 
-
+*/
 
 const fetchContent = async () => {
 
@@ -62,29 +67,14 @@ const fetchPublishedArticles = async () => {
     console.log('publishedArticles value', data.value)
 }
 
-/*
-const fetchFeaturedArticles = async () => {
-    const { data } = await useAsyncData('featured', () =>
-        queryCollection('blog')
-            .where('featured', '=', true)
-            .all()
-    );
-
-    console.log('featured', data)
-    featuredArticles.value = data.value;
-    console.log('featured articles', featuredArticles.value)
-    console.log('featured articles2', featuredArticles)
-};
-
-*/
 
 
 onMounted(async () => {
 
     await fetchContent()
-    //await fetchFeaturedArticles()
+    await fetchBannerImages()
     await fetchPublishedArticles()
-    loaded.value=true
+    loaded.value = true
 
 })
 
