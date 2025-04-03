@@ -1,6 +1,6 @@
 ---
 title: Amores
-description : La Colombiana 
+description : Pues, mi vida es mi pasión, y mi pasión son las imágenes. Soy una fanática del erotismo en la fotografía y me encanta capturar momentos sensuales y llenos de vida. Decidí ser freelance para no atarme a un solo estilo y explorar todo lo que mi cámara y yo somos capaces.También tengo un técnico en enfermería y administración de salud.  
 image: 'https://i.ibb.co/YFSnZymx/1868386752.jpg'
 tags: ['Onlyfans']
 published: true

@@ -1,6 +1,6 @@
 <template>
     <div class="flex flex-wrap gap-2">
-        <Badge v-for="tag in tags" :key="tag" >
+        <Badge v-for="tag in tags" :key="tag" :variant="'secondary'" >
             <NuxtLink :to="`/revista/etiquetas/${tag.toLowerCase()}`" class="text-current">
                 {{ tag }}
             </NuxtLink>

@@ -17,7 +17,35 @@ const components: { title: string, href: string, description: string }[] = [
         description:
             'A modal dialog that interrupts the user with important content and expects a response.',
     },
-    // ... keep your other components array items ...
+    {
+        title: 'Hover Card',
+        href: '/docs/components/hover-card',
+        description:
+            'For sighted users to preview content available behind a link.',
+    },
+    {
+        title: 'Progress',
+        href: '/docs/components/progress',
+        description:
+            'Displays an indicator showing the completion progress of a task, typically displayed as a progress bar.',
+    },
+    {
+        title: 'Scroll-area',
+        href: '/docs/components/scroll-area',
+        description: 'Visually or semantically separates content.',
+    },
+    {
+        title: 'Tabs',
+        href: '/docs/components/tabs',
+        description:
+            'A set of layered sections of content—known as tab panels—that are displayed one at a time.',
+    },
+    {
+        title: 'Tooltip',
+        href: '/docs/components/tooltip',
+        description:
+            'A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.',
+    },
 ]
 
 const isMobileMenuOpen = ref(false)
@@ -29,12 +57,12 @@ const isMobileMenuOpen = ref(false)
         id="header-nav">
         <div class="container flex h-20 items-center justify-between px-4 md:px-16">
             <!-- Logo -->
-            <NuxtLink to="/" class="flex items-center" style="margin-left: 5vw;">
+            <NuxtLink to="/" class="flex items-center md:ml-5">
                 <img src="/logo.png" alt="Logo" class="h-8 w-auto" style="width: 100px; height: auto;" />
             </NuxtLink>
 
-            <!-- Desktop Navigation (shown on md screens and up) -->
-            <NavigationMenu id="desktop-menu" >
+            <!-- Desktop Navigation -->
+            <NavigationMenu class="hidden md:block md:mr-10">
                 <NavigationMenuList>
                     <NavigationMenuItem>
                         <NavigationMenuTrigger style="background: transparent;">Getting started</NavigationMenuTrigger>
@@ -120,8 +148,8 @@ const isMobileMenuOpen = ref(false)
                 </NavigationMenuList>
             </NavigationMenu>
 
-            <!-- Mobile Menu Button (hidden on md screens and up) -->
-            <button @click="isMobileMenuOpen = !isMobileMenuOpen" style="display: none;" id="mobile-buttons">
+            <!-- Mobile Menu Button -->
+            <button @click="isMobileMenuOpen = !isMobileMenuOpen" class="md:hidden p-2">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="3" y1="12" x2="21" y2="12"></line>
@@ -131,8 +159,8 @@ const isMobileMenuOpen = ref(false)
             </button>
         </div>
 
-        <!-- Mobile Navigation Menu (hidden on md screens and up) -->
-        <div v-if="isMobileMenuOpen" class="bg-background/95 backdrop-blur-md pb-4 px-4" style="display: none;" id="mobile-container">
+        <!-- Mobile Navigation Menu -->
+        <div v-if="isMobileMenuOpen" class="md:hidden bg-background/95 backdrop-blur-md pb-4 px-4">
             <div class="flex flex-col space-y-2">
                 <NuxtLink to="/docs/introduction" class="px-4 py-2 hover:bg-accent rounded-md">
                     Documentation
@@ -170,18 +198,9 @@ const isMobileMenuOpen = ref(false)
 #header-nav {
     transition: all 0.3s ease;
 }
- 
+
 /* Adjust container padding for mobile */
 @media (max-width: 768px) {
-
-    #mobile-buttons, #mobile-container{
-        display: flex !important;
-    }
-
-    #desktop-menu{
-        display: none !important;
-    }
-
     .container {
         padding-left: 1rem;
         padding-right: 1rem;

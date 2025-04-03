@@ -53,12 +53,15 @@ const formatDate = (dateString) => {
         </CardHeader>
 
         <CardContent class="pt-0">
+            <ArticleTagsComponent :tags="article.tags || []" />
+            <!--
             <div v-if="article.tags && article.tags.length" class="flex flex-wrap gap-2">
                 <span v-for="tag in article.tags" :key="tag"
                     class="text-xs px-2 py-1 bg-secondary text-secondary-foreground rounded-full">
                     {{ tag }}
                 </span>
-            </div>
+            </div>-->
+
         </CardContent>
 
         <CardFooter class="pt-0">

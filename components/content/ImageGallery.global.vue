@@ -5,8 +5,12 @@
             <div v-for="(image, index) in parsedImages" :key="index"
                 class="overflow-hidden rounded-lg shadow-md cursor-pointer hover:shadow-lg transition-shadow duration-300"
                 @click="openLightbox(index)">
+              
+                <NuxtImg :src="image" :alt="`Gallery image ${index + 1}`" quality="80"
+                    class="w-full h-auto block hover:scale-105 transition-transform duration-300" />
+                <!--
                 <img :src="image" :alt="`Gallery image ${index + 1}`"
-                    class="w-full h-auto block hover:scale-105 transition-transform duration-300" loading="lazy" />
+                    class="w-full h-auto block hover:scale-105 transition-transform duration-300" loading="lazy" />-->
             </div>
         </div>
 

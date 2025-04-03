@@ -7,7 +7,7 @@
             <SimpleHero :images="bannerImages" />
         </section>
 
-        <section class="mb-12">
+        <section class="mb-12 lg:px-24">
             <CategoriesCarousel :categoryArticlesArray="categoryArticles" />
         </section>
 

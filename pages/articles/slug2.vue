@@ -5,7 +5,7 @@
 
             <div class="mb-12">
                 <BannerImageComponent :imageUrl="article.image" :title="article.title"
-                    :subtitle="article.description && article.description.length > 100 ? article.description.slice(0, 100) : article.description" />
+                    :subtitle="article.description && article.description.length>100 ? article.description.slice(0,100) : article.description" />
             </div>
 
             <div style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
@@ -13,12 +13,12 @@
                 <div class="flex-1 w-7xl">
 
                     <Card class="p-6 mb-8 bg-secondary" style="width: 90vw;">
-                        <div id="details-container" class="flex" style="flex-direction: row; position: relative;">
-                            <div id="details-1" style="width: 60%;">
+                        <div class="grid md:grid-cols-2 gap-8">
+                            <div>
                                 <h2 class="text-2xl font-semibold mb-3">Descripción</h2>
                                 <p class="text-muted-foreground">{{ article.description }}</p>
                             </div>
-                            <div id="details-2" style="width: 40%;">
+                            <div>
                                 <h2 class="text-2xl font-semibold mb-3">Detalles</h2>
                                 <ul class="space-y-3">
                                     <li class="flex">
@@ -46,7 +46,8 @@
 
                 <div style="display: flex; flex-direction: row; width: 90vw; position: relative; gap:100px">
 
-                    <div class="toc-container">
+                    <div
+                        style="width: 30vw; position: sticky; top: 80px; align-self: flex-start; max-height: 70vh; overflow: auto;">
                         <Card class="p-4 bg-secondary">
                             <h2 class="text-2xl font-semibold mb-4">Tabla de Contenido</h2>
                             <ul style="display: flex; flex-direction: column; gap: 7px;">
@@ -174,7 +175,8 @@ onMounted(async () => {
 
 <style>
 /* Keep your existing styles */
-.detail {
+
+.detail{
     margin-right: 10px;
 }
 
@@ -188,9 +190,9 @@ onMounted(async () => {
 }
 
 #article-text p {
-    /*margin: 15px;*/
-    margin-top: 7px;
-    margin-bottom: 7px;
+    /*margin:15px */
+    margin-top: 5px;
+    margin-bottom: 5px;
 }
 
 #article-text a {
@@ -203,47 +205,22 @@ onMounted(async () => {
     font-weight: bold;
 }
 
-/* TOC styling */
+/* Additional TOC styling */
 .toc-container {
-    width: 30vw;
     position: sticky;
-    top: 80px;
-    align-self: flex-start;
-    max-height: 70vh;
-    overflow: auto;
+    top: 60px;
+    /*height: fit-content;*/
+    max-height: 40vh;
+    overflow-y: scroll;
 }
 
-/* Responsive styles */
-@media (max-width: 768px) {
+.toc-link {
+    display: block;
+    padding: 4px 0;
+    transition: color 0.2s ease;
+}
 
-    #details-container{
-        flex-direction: column;
-    }
-
-    #details-1, #details-2{
-        width: 100% !important
-    }
-
-    .toc-container {
-        position: static;
-        width: 100%;
-        max-height: none;
-        order: 1;
-        margin-top: 20px;
-    }
-
-    #article-card,
-    #article-text {
-        width: 100%;
-    }
-
-    div[style*="flex-direction: row"] {
-        flex-direction: column !important;
-        gap: 20px !important;
-    }
-
-    div[style*="width: 60vw"] {
-        width: 100% !important;
-    }
+.toc-link:hover {
+    color: hsl(var(--primary));
 }
 </style>
