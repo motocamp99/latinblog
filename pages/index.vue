@@ -38,14 +38,34 @@ const fetchFeaturedArticles = async () => {
             .limit(12)
             .all()
     );
+
+    console.log(data)
     featuredArticles.value = data.value;
 };
+
+const fetchFR = async () => {
+    const { data, error: fetchError } = await useFetch('/api/articles');
+
+    if (fetchError.value) {
+        throw fetchError.value;
+    }
+
+    console.log(data)
+
+    return data
+
+}
+
+
 
 
 onMounted(async () => {
 
     await fetchContent()
     await fetchFeaturedArticles()
+    await fetchFR().then(res=>console.log('res', res))
+
+
     /*
     const { data } = await useAsyncData('blog', () => {
         return queryCollection('blog').all()
