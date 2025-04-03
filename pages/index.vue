@@ -1,10 +1,10 @@
 <template>
     <div>
-        {{ data }}
+        
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 
 import { ref, computed, onMounted } from 'vue';
 
@@ -14,13 +14,13 @@ console.log(data)
 */
 
 //new
-
+/*
 const { data } = await useAsyncData('blog', () => {
     return queryCollection('blog').all()
 })
+*/
 
-
-console.log('data1', data)
+//console.log('data1', data)
 
 
 const fetchContent = async () => {
@@ -34,7 +34,7 @@ const fetchContent = async () => {
 
 onMounted(async () => {
     
-    await fetchContent()
+    fetchContent()
 
     /*
     const { data } = await useAsyncData('blog', () => {
