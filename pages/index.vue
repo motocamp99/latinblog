@@ -1,7 +1,7 @@
 <template>
-    <div>
+    <div v-if="loaded">
         testinfg
-       <!-- {{ featuredArticles }}-->
+        {{ allArticles }}
     </div>
 </template>
 
@@ -9,8 +9,9 @@
 
 import { ref, onMounted } from 'vue';
 
+const allArticles = ref([]);
+const loaded = ref(false);
 
-const featuredArticles = ref([]);
 
 //new
 /*
@@ -21,62 +22,51 @@ const { data } = await useAsyncData('blog', () => {
 
 //console.log('data1', data)
 
-const fetchArticle= async(slug)=>{
+const fetchArticle = async (slug) => {
     const { data } = await useAsyncData('article', () =>
         queryCollection('blog')
-        .path('/articles/' + slug)
-        .first()
+            .path('/articles/' + slug)
+            .first()
     );
 
     console.log('firstarticle', data)
     console.log('firstarticle2', data.value)
 }
 
-/*
+
+
 const fetchContent = async () => {
 
     const { data } = await useAsyncData('content', () =>
         queryCollection('blog')
-            .where('featured', '=', true)
-            .order('date', 'DESC')
-            .limit(2)
+            .where('published', '=', true)
+            /*.order('date', 'DESC')*/
             .all()
     );
 
     console.log('datacontent', data)
-};*/
-
-const fetchContent = async () => {
-
-const { data } = await useAsyncData('content', () =>
-    queryCollection('blog')
-        .where('published', '=', true)
-        /*.order('date', 'DESC')*/
-        .all()
-);
-
-console.log('datacontent', data)
 }
 
 const fetchPublishedArticles = async () => {
 
-const { data } = await useAsyncData('content', () =>
-    queryCollection('blog')
-        .where('published', '=', true)
-        /*.order('date', 'DESC')*/
-        .all()
-);
+    const { data } = await useAsyncData('content', () =>
+        queryCollection('blog')
+            .where('published', '=', true)
+            /*.order('date', 'DESC')*/
+            .all()
+    );
 
-console.log('publishedArticles', data)
-console.log('publishedArticles value', data.value)
+    allArticles.value = data.value
+
+    console.log('publishedArticles', data)
+    console.log('publishedArticles value', data.value)
 }
 
+/*
 const fetchFeaturedArticles = async () => {
     const { data } = await useAsyncData('featured', () =>
         queryCollection('blog')
             .where('featured', '=', true)
-            /*.order('date', 'DESC')*/
-            /*.limit(12)*/
             .all()
     );
 
@@ -86,22 +76,15 @@ const fetchFeaturedArticles = async () => {
     console.log('featured articles2', featuredArticles)
 };
 
-
+*/
 
 
 onMounted(async () => {
 
     await fetchContent()
-    await fetchFeaturedArticles()
-    await fetchPublishedArticles()
-
-    //await fetchContent()
     //await fetchFeaturedArticles()
-    //await fetchArticle('article2')
-
-    /*
-    const { data } = await useAsyncData('blog', () => queryCollection('blog').all())
-    console.log('data', data)*/
+    await fetchPublishedArticles()
+    loaded.value=true
 
 })
 
