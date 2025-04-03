@@ -51,7 +51,7 @@ const fetchContent = async () => {
 const { data } = await useAsyncData('content', () =>
     queryCollection('blog')
         .where('published', '=', true)
-        .order('date', 'DESC')
+        /*.order('date', 'DESC')*/
         .all()
 );
 
@@ -79,6 +79,7 @@ const fetchFeaturedArticles = async () => {
 onMounted(async () => {
 
     await fetchContent()
+    await fetchFeaturedArticles()
 
     //await fetchContent()
     //await fetchFeaturedArticles()
