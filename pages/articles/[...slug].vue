@@ -2,9 +2,72 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
         <div v-if="loaded">
-            test
-            <div class="p-4" id="article-card">
-                <ContentRenderer :value="article" id="article-text" />
+
+            <div class="mb-12">
+                <BannerImageComponent :imageUrl="article.image" :title="article.title"
+                    :subtitle="article.meta.subtitle" />
+            </div>
+
+            <div style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+
+                <div class="flex-1 w-7xl">
+
+                    <Card class="p-6 mb-8 bg-secondary" style="width: 90vw;">
+                        <div class="grid md:grid-cols-2 gap-8">
+                            <div>
+                                <h2 class="text-2xl font-semibold mb-3">Descripción</h2>
+                                <p class="text-muted-foreground">{{ article.description }}</p>
+                            </div>
+                            <div>
+                                <h2 class="text-2xl font-semibold mb-3">Detalles</h2>
+                                <ul class="space-y-3 text-muted-foreground">
+                                    <li class="flex">
+                                        <span class="font-medium w-24">Fecha:</span>
+                                        <span>{{ formatDate(article.date) }}</span>
+                                    </li>
+                                    <li class="flex">
+                                        <span class="font-medium w-24">Categoría:</span>
+                                        <NuxtLink :to="`/revista/category/${article.category}`"
+                                            class="text-primary hover:underline">
+                                            {{ article.category }}
+                                        </NuxtLink>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <span class="font-medium w-24">Etiquetas:</span>
+                                        <ArticleTagsComponent :tags="article.tags || []" />
+                                    </li>
+                                </ul>
+
+                                <SocialMediaLinks v-if="socialLinks" :socialLinks="socialLinks" class="mt-4" />
+                            </div>
+                        </div>
+                    </Card>
+                </div>
+
+                <div style="display: flex; flex-direction: row; width: 90vw; position: relative; gap:100px">
+
+                    <div
+                        style="width: 30vw; position: sticky; top: 20px; align-self: flex-start; max-height: 70vh; overflow: auto;">
+                        <Card class="p-4 bg-secondary">
+                            <h2 class="text-2xl font-semibold mb-4">Tabla de Contenido</h2>
+                            <ul style="display: flex; flex-direction: column; gap: 7px;">
+                                <li v-for="link in article.body.toc.links" :key="link.id">
+                                    <a :href="`#${link.id}`"
+                                        class="text-md text-muted-foreground hover:text-primary transition-colors block py-1">
+                                        {{ link.text }}
+                                    </a>
+                                </li>
+                            </ul>
+                        </Card>
+                    </div>
+
+
+                    <div style="width: 60vw;">
+                        <div class="p-4" id="article-card">
+                            <ContentRenderer :value="article" id="article-text" />
+                        </div>
+                    </div>
+                </div>
             </div>
 
         </div>
@@ -94,9 +157,9 @@
 
 import { Card } from '@/components/ui/card'
 import { ref, onMounted } from 'vue';
-let article = null
+let article = ref({})
 const slug = useRoute().params.slug[0].toString()
-const loaded=ref(false)
+const loaded = ref(false)
 /*
 const { data } = await useAsyncData(() => queryCollection('blog').path('/articles/' + slug).first())
 */
@@ -121,7 +184,7 @@ const fetchArticle = async (slug) => {
             .first()
     );
 
-    article=data.value
+    article.value = data.value
     console.log('firstarticle', data)
     console.log('firstarticle2', data.value)
 }
@@ -160,7 +223,7 @@ useSeoMeta({
 onMounted(async () => {
     await fetchContent()
     await fetchArticle(slug)
-    loaded.value=true
+    loaded.value = true
 })
 
 
