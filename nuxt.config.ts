@@ -10,11 +10,10 @@ export default defineNuxtConfig({
     '@nuxt/image'
   ],
 
-  /*
   nitro: {
     preset: 'cloudflare_pages',
   },
-*/
+
   shadcn: {
     /**
      * Prefix for all the imported component
