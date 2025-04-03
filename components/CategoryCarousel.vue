@@ -23,7 +23,7 @@ const props = defineProps({
                 <CarouselItem v-for="category in categories" :key="category.category"
                     class="sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5">
                     <div class="p-1">
-                        <NuxtLink :to="`/revista/category/${category.category}`">
+                        <NuxtLink :to="`/category/${category.category}`">
                             <Card class="h-full transition-all hover:shadow-lg">
                                 <CardContent class="flex flex-col items-center p-0 aspect-[4/3]">
                                     <NuxtImg :src="category.category_image" :alt="category.alt"

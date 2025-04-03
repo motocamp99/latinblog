@@ -1,11 +1,11 @@
 <template>
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="px-4 sm:px-2 lg:px-8">
 
         <div v-if="loaded">
 
             <div class="mb-12">
                 <BannerImageComponent :imageUrl="article.image" :title="article.title"
-                    :subtitle="article.description && article.description.length > 100 ? article.description.slice(0, 100) : article.description" />
+                    :subtitle="article.description && article.description.length > 180 ? `${article.description.slice(0, 180)}...` : article.description" />
             </div>
 
             <div style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
@@ -14,13 +14,13 @@
 
                     <Card class="p-6 mb-8 bg-secondary" style="width: 90vw;">
                         <div id="details-container" class="flex" style="flex-direction: row; position: relative;">
-                            <div id="details-1" style="width: 60%;">
+                            <div id="details-1" style="width: 60%; padding-right: 50px;">
                                 <h2 class="text-2xl font-semibold mb-3">Descripción</h2>
                                 <p class="text-muted-foreground">{{ article.description }}</p>
                             </div>
                             <div id="details-2" style="width: 40%;">
                                 <h2 class="text-2xl font-semibold mb-3">Detalles</h2>
-                                <ul class="space-y-3">
+                                <ul class="space-y-1">
                                     <li class="flex">
                                         <span class="detail font-medium w-24">Fecha:</span>
                                         <span>{{ formatDate(article.date) }}</span>
@@ -34,7 +34,7 @@
                                     </li>
                                     <li class="flex items-start">
                                         <span class="detail font-medium w-24">Etiquetas:</span>
-                                        <ArticleTagsComponent :tags="article.tags || []" />
+                                        <ArticleTagsBlackComponent :tags="article.tags || []" />
                                     </li>
                                 </ul>
 
@@ -175,7 +175,7 @@ onMounted(async () => {
 <style>
 /* Keep your existing styles */
 .detail {
-    margin-right: 10px;
+    margin-right: 2px;
 }
 
 #article-card {
@@ -189,8 +189,8 @@ onMounted(async () => {
 
 #article-text p {
     /*margin: 15px;*/
-    margin-top: 7px;
-    margin-bottom: 7px;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
 #article-text a {
@@ -216,12 +216,17 @@ onMounted(async () => {
 /* Responsive styles */
 @media (max-width: 768px) {
 
+    #main-container{
+       /* padding-top: 0;*/
+    }
+
     #details-container{
         flex-direction: column;
     }
 
     #details-1, #details-2{
-        width: 100% !important
+        width: 100% !important;
+        padding-right:0;
     }
 
     .toc-container {

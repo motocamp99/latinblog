@@ -29,7 +29,7 @@ const isMobileMenuOpen = ref(false)
         id="header-nav">
         <div class="container flex h-20 items-center justify-between px-4 md:px-16">
             <!-- Logo -->
-            <NuxtLink to="/" class="flex items-center" style="margin-left: 5vw;">
+            <NuxtLink to="/" class="flex items-center" style="margin-left: 2vw;">
                 <img src="/logo.png" alt="Logo" class="h-8 w-auto" style="width: 100px; height: auto;" />
             </NuxtLink>
 

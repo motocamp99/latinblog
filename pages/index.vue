@@ -7,7 +7,12 @@
             <SimpleHero :images="bannerImages" />
         </section>
 
-        <section class="mb-12 lg:px-24">
+        <section class="mb-12 px-4 lg:px-24">
+            <h4 class="text-2xl font-semibold capitalize">Categorías</h4>
+            <CategoryCarousel :categories="categories" />
+        </section>
+
+        <section class="mb-12 lg:px-14">
             <CategoriesCarousel :categoryArticlesArray="categoryArticles" />
         </section>
 
@@ -159,8 +164,10 @@ const fetchPublishedArticles = async () => {
     // Prepare categoryArticles array with featured articles
     categoryArticles.value = Array.from(featuredByCategory.entries()).map(([category, articles]) => ({
         category,
-        articles: articles.slice(0, 5) // Limit to 5 featured articles per category
+        articles
     }));
+
+    console.log('CATEGORIES', categories.value)
 }
 
 const paginatedArticles = computed(() => {

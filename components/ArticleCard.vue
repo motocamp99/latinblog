@@ -40,10 +40,11 @@ const formatDate = (dateString) => {
 
         <CardHeader class="flex-grow">
             <div class="flex items-center gap-2 mb-2">
-                <span v-if="article.category"
-                    class="text-xs font-medium px-2 py-1 bg-primary text-primary-foreground rounded-full">
-                    {{ article.category }}
-                </span>
+                <NuxtLink v-if="article.category" :to="`/category/${article.category}`">
+                    <span class="text-xs font-medium px-2 py-1 bg-primary text-primary-foreground rounded-full">
+                        {{ article.category }}
+                    </span>
+                </NuxtLink>
                 <span class="text-xs text-muted-foreground">
                     {{ formatDate(article.date) }}
                 </span>

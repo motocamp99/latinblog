@@ -18,7 +18,7 @@ const props = defineProps({
 <template>
     <div>
         <div v-for="categoryGroup in categoryArticlesArray" :key="categoryGroup.category" class="mb-12">
-            <div class="flex justify-between items-center mb-6 px-4 lg:px-24">
+            <div class="flex justify-between items-center mb-6 px-4">
                 <h4 class="text-2xl font-semibold capitalize">{{ categoryGroup.category }}</h4>
                 <NuxtLink :to="`/revista/category/${categoryGroup.category}`"
                     class="text-sm font-medium text-primary hover:underline">
@@ -26,7 +26,7 @@ const props = defineProps({
                 </NuxtLink>
             </div>
 
-            <Carousel class="relative w-full px-4 lg:px-24" :opts="{ align: 'start' }">
+            <Carousel class="relative w-full px-4" :opts="{ align: 'start' }">
                 <CarouselContent>
                     <CarouselItem v-for="article in categoryGroup.articles" :key="article.title"
                         class="sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5">
