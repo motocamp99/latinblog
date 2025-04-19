@@ -140,13 +140,12 @@ const formatDate = (dateString) => {
     })
 }
 
-
+/*
 const fetchPosts = async () => {
     let token= await getToken()
     //console.log('token', token)
     const response = await fetch(
-       /* `https://bknd.motocamp99.workers.dev/api/data/entity/posts?select=id&select=description&limit=10&offset=0&sort=id`*/
-      /*`https://bknd.motocamp99.workers.dev/api/data/entity/posts?select=tags&limit=10&offset=0&sort=id` */
+    
       'https://bknd.motocamp99.workers.dev/api/data/entity/posts?limit=10&offset=0',
         {
             method: 'GET',
@@ -161,7 +160,27 @@ const fetchPosts = async () => {
 
     console.log('resulted bknd', result)
 }
+*/
 
+const fetchPosts=async()=>{
+
+    const response = await fetch(
+    
+      'https://latin.dedyn.io/items/posts',
+        {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                /*'Authorization': `Bearer ${token}`*/
+            },
+        }
+    );
+    if (!response.ok) throw new Error('Failed to fetch info data');
+    const result = await response.json();
+
+    console.log('resulted directus', result)
+
+}
 
 const socialLinks = computed(() => ({
     ig: article.value.meta?.ig,
@@ -172,7 +191,7 @@ const socialLinks = computed(() => ({
     phub: article.value.meta?.phub,
 }))
 
-
+/*
 const getToken = async () => {
     const { data } = await useFetch('/api/login', {
         method: 'POST',
@@ -180,7 +199,7 @@ const getToken = async () => {
 
     return data.value?.data.token
 }
-
+*/
 
 
 onMounted(async () => {
