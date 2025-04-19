@@ -141,6 +141,28 @@ const formatDate = (dateString) => {
 }
 
 
+const fetchPosts = async () => {
+    let token= await getToken()
+    //console.log('token', token)
+    const response = await fetch(
+       /* `https://bknd.motocamp99.workers.dev/api/data/entity/posts?select=id&select=description&limit=10&offset=0&sort=id`*/
+      /*`https://bknd.motocamp99.workers.dev/api/data/entity/posts?select=tags&limit=10&offset=0&sort=id` */
+      'https://bknd.motocamp99.workers.dev/api/data/entity/posts?limit=10&offset=0',
+        {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+        }
+    );
+    if (!response.ok) throw new Error('Failed to fetch info data');
+    const result = await response.json();
+
+    console.log('resulted bknd', result)
+}
+
+
 const socialLinks = computed(() => ({
     ig: article.value.meta?.ig,
     fb: article.value.meta?.fb,
@@ -149,6 +171,16 @@ const socialLinks = computed(() => ({
     x: article.value.meta?.x,
     phub: article.value.meta?.phub,
 }))
+
+
+const getToken = async () => {
+    const { data } = await useFetch('/api/login', {
+        method: 'POST',
+    });
+
+    return data.value?.data.token
+}
+
 
 
 onMounted(async () => {
@@ -164,6 +196,8 @@ onMounted(async () => {
         ogImage: article.value.image,
         twitterCard: 'summary_large_image'
     })
+
+    await fetchPosts()
 
     loaded.value = true
 })
@@ -216,17 +250,18 @@ onMounted(async () => {
 /* Responsive styles */
 @media (max-width: 768px) {
 
-    #main-container{
-       /* padding-top: 0;*/
+    #main-container {
+        /* padding-top: 0;*/
     }
 
-    #details-container{
+    #details-container {
         flex-direction: column;
     }
 
-    #details-1, #details-2{
+    #details-1,
+    #details-2 {
         width: 100% !important;
-        padding-right:0;
+        padding-right: 0;
     }
 
     .toc-container {

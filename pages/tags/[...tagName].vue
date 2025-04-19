@@ -2,6 +2,7 @@
     <div>
         <!-- Hero Section -->
         <div v-if="loaded">
+            <!--
             <section>
                 <NuxtImg :src="`assets/images/categories/${categoryName}.png`" class="w-full" />
             </section>
@@ -55,12 +56,14 @@
                             </li>
                         </ul>
                     </nav>
+                    
                 </div>
 
                 <div v-else class="text-center py-12">
                     <p class="text-gray-500">No se encontraron artículos</p>
                 </div>
             </section>
+            -->
 
         </div>
         <div v-else class="flex justify-center items-center h-64">
