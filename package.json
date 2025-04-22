@@ -10,7 +10,6 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@nuxt/content": "^3.2.2",
     "@nuxt/image": "^1.8.1",
     "@vueuse/core": "^13.0.0",
     "class-variance-authority": "^0.7.1",

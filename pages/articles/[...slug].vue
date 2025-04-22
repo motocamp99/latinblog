@@ -4,8 +4,9 @@
         <div v-if="loaded">
 
             <div class="mb-12">
+                <!--
                 <BannerImageComponent :imageUrl="article.image" :title="article.title"
-                    :subtitle="article.description && article.description.length > 180 ? `${article.description.slice(0, 180)}...` : article.description" />
+                    :subtitle="article.description && article.description.length > 180 ? `${article.description.slice(0, 180)}...` : article.description" />-->
             </div>
 
             <div style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
@@ -16,29 +17,31 @@
                         <div id="details-container" class="flex" style="flex-direction: row; position: relative;">
                             <div id="details-1" style="width: 60%; padding-right: 50px;">
                                 <h2 class="text-2xl font-semibold mb-3">Descripción</h2>
-                                <p class="text-muted-foreground">{{ article.description }}</p>
+                                <!--<p class="text-muted-foreground">{{ article.description }}</p>-->
                             </div>
                             <div id="details-2" style="width: 40%;">
                                 <h2 class="text-2xl font-semibold mb-3">Detalles</h2>
                                 <ul class="space-y-1">
                                     <li class="flex">
                                         <span class="detail font-medium w-24">Fecha:</span>
-                                        <span>{{ formatDate(article.date) }}</span>
+                                        <!--<span>{{ formatDate(article.date) }}</span>-->
                                     </li>
                                     <li class="flex">
                                         <span class="detail font-medium w-24">Categoría:</span>
+                                        <!--
                                         <NuxtLink :to="`/revista/category/${article.category}`"
                                             class="text-primary hover:underline">
                                             {{ article.category }}
-                                        </NuxtLink>
+                                        </NuxtLink>-->
                                     </li>
                                     <li class="flex items-start">
                                         <span class="detail font-medium w-24">Etiquetas:</span>
-                                        <ArticleTagsBlackComponent :tags="article.tags || []" />
+                                        <!--
+                                        <ArticleTagsBlackComponent :tags="article.tags || []" />-->
                                     </li>
                                 </ul>
 
-                                <SocialMediaLinks v-if="socialLinks" :socialLinks="socialLinks" class="mt-4" />
+                                <!--<SocialMediaLinks v-if="socialLinks" :socialLinks="socialLinks" class="mt-4" />-->
                             </div>
                         </div>
                     </Card>
@@ -50,12 +53,7 @@
                         <Card class="p-4 bg-secondary">
                             <h2 class="text-2xl font-semibold mb-4">Tabla de Contenido</h2>
                             <ul style="display: flex; flex-direction: column; gap: 7px;">
-                                <li v-for="link in article.body.toc.links" :key="link.id">
-                                    <a :href="`#${link.id}`"
-                                        class="text-md text-muted-foreground hover:text-primary transition-colors block py-1">
-                                        {{ link.text }}
-                                    </a>
-                                </li>
+                                TOC here
                             </ul>
                         </Card>
                     </div>
@@ -63,7 +61,7 @@
 
                     <div style="width: 60vw;">
                         <div class="p-4" id="article-card">
-                            <ContentRenderer :value="article" id="article-text" />
+                            Content HERE
                         </div>
                     </div>
                 </div>
@@ -104,32 +102,6 @@ useHead({
     ]
 })
 
-const fetchContent = async () => {
-
-    const { data } = await useAsyncData('content2', () =>
-        queryCollection('blog')
-            .where('published', '=', true)
-            /*.order('date', 'DESC')*/
-            .all()
-    );
-
-    console.log('datacontent')
-}
-
-
-const fetchArticle = async (slug) => {
-    const { data } = await useAsyncData('article', () =>
-        queryCollection('blog')
-            .path('/articles/' + slug)
-            .first()
-    );
-
-    article.value = data.value
-    console.log('firstarticle', data)
-    console.log('firstarticle2', data.value)
-}
-
-
 
 const formatDate = (dateString) => {
     const date = new Date(dateString)
@@ -140,33 +112,32 @@ const formatDate = (dateString) => {
     })
 }
 
-/*
-const fetchPosts = async () => {
-    let token= await getToken()
-    //console.log('token', token)
+
+const fetchContent=async()=>{
+
     const response = await fetch(
     
-      'https://bknd.motocamp99.workers.dev/api/data/entity/posts?limit=10&offset=0',
+      'https://latin.dedyn.io/items/posts',
         {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
+                /*'Authorization': `Bearer ${token}`*/
             },
         }
     );
     if (!response.ok) throw new Error('Failed to fetch info data');
     const result = await response.json();
 
-    console.log('resulted bknd', result)
-}
-*/
+    console.log('resulted directus', result)
 
-const fetchPosts=async()=>{
+}
+
+const fetchArticle=async(slug)=>{
 
     const response = await fetch(
     
-      'https://latin.dedyn.io/items/posts',
+      `https://latin.dedyn.io/items/posts/${slug}`,
         {
             method: 'GET',
             headers: {
@@ -191,16 +162,6 @@ const socialLinks = computed(() => ({
     phub: article.value.meta?.phub,
 }))
 
-/*
-const getToken = async () => {
-    const { data } = await useFetch('/api/login', {
-        method: 'POST',
-    });
-
-    return data.value?.data.token
-}
-*/
-
 
 onMounted(async () => {
     await fetchContent()
@@ -216,7 +177,6 @@ onMounted(async () => {
         twitterCard: 'summary_large_image'
     })
 
-    await fetchPosts()
 
     loaded.value = true
 })

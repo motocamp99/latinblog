@@ -9,17 +9,19 @@
             <section class="px-4 lg:px-24">
                 <div v-if="allArticles.length > 0">
 
+                    <!--
                     <div class="mb-8">
                         <h2 class="text-2xl font-bold mb-4">Etiquetas</h2>
                         <Tags :tags="tags" @tag-selected="handleTagSelect" />
-                    </div>
+                    </div>-->
 
 
                     <h2 class="text-2xl font-bold mb-6">Todos Los Artículos</h2>
+                    <!--
                     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                         <ArticleCard v-for="article in paginatedArticles" :key="article.title" :article="article"
                             class="w-full h-full" />
-                    </div>
+                    </div>-->
 
 
                     <nav aria-label="Page navigation" class="mt-8 mb-12">
@@ -92,61 +94,46 @@ const loaded = ref(false);
 const featuredArticles = ref([]);
 const selectedTag = ref('todos'); // Default to 'todos' to show all articles
 
+const fetchContent=async()=>{
 
-const fetchContent = async () => {
-
-    const { data } = await useAsyncData('content23', () =>
-        queryCollection('blog')
-            .where('published', '=', true)
-            /*.order('date', 'DESC')*/
-            .all()
+    const response = await fetch(
+    
+      'https://latin.dedyn.io/items/posts',
+        {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                /*'Authorization': `Bearer ${token}`*/
+            },
+        }
     );
+    if (!response.ok) throw new Error('Failed to fetch info data');
+    const result = await response.json();
 
-    console.log('datacontent')
+    console.log('resulted directus', result)
+
 }
 
+const fetchPosts=async()=>{
 
-// Fetch all articles for the category
-const fetchAllArticles = async () => {
-    const query = queryCollection('blog')
-        .where('published', '=', true)
-        .where('category', '=', categoryName.value)
-        .order('date', 'DESC');
-
-    const { data } = await useAsyncData('blog', () => query.all());
-    console.log('cat articles', data)
-    allArticles.value = data.value;
-
-    // Extract and count tags
-    const tagCounts = {};
-    allArticles.value.forEach((article) => {
-        if (article.tags) {
-            article.tags.forEach((tag) => {
-                tagCounts[tag] = (tagCounts[tag] || 0) + 1;
-            });
+    const response = await fetch(
+    
+      'https://latin.dedyn.io/items/posts',
+        {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                /*'Authorization': `Bearer ${token}`*/
+            },
         }
-    });
-    tags.value = tagCounts;
-};
-
-// Fetch featured articles
-const fetchFeaturedArticles = async () => {
-    const { data } = await useAsyncData('featured', () =>
-        queryCollection('blog')
-            .where('category', '=', categoryName.value)
-            .where('featured', '=', true)
-            .order('date', 'DESC')
-            .limit(6)
-            .all()
     );
-    featuredArticles.value = data.value;
-};
+    if (!response.ok) throw new Error('Failed to fetch info data');
+    const result = await response.json();
 
-// Handle tag selection
-const handleTagSelect = (tag) => {
-    selectedTag.value = tag;
-    currentPage.value = 1; // Reset to the first page when a new tag is selected
-};
+    console.log('resulted directus', result)
+
+}
+
 
 // Filter articles based on the selected tag
 const filteredArticles = computed(() => {
@@ -199,9 +186,8 @@ const changePage = (page) => {
 
 onMounted(async () => {
 
-    await fetchContent(); // Fetch banner data
-    await fetchAllArticles(); // Fetch all articles for the category
-    await fetchFeaturedArticles();
+    await fetchContent(); 
+    await fetchPosts()
     loaded.value = true;
     window.scrollTo(0, 0);
 });

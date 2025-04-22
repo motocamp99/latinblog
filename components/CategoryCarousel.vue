@@ -26,9 +26,11 @@ const props = defineProps({
                         <NuxtLink :to="`/category/${category.category}`">
                             <Card class="h-full transition-all hover:shadow-lg">
                                 <CardContent class="flex flex-col items-center p-0 aspect-[4/3]">
-                                    <NuxtImg :src="category.category_image" :alt="category.alt"
+                                    <!--
+                                    <NuxtImg :src="`https://latin.dedyn.io/assets/${category.image.image}`" :alt="category.alt"
                                         class="w-full h-full object-cover rounded-t-lg" loading="lazy"
-                                        :modifiers="{ fit: 'cover', quality: 80 }" />
+                                        :modifiers="{ fit: 'cover', quality: 80 }" />-->
+                                        <img :src="`https://latin.dedyn.io/assets/${category.image.image}`" alt="">
                                     <div class="p-4 w-full text-center">
                                         <h3 class="text-lg font-semibold capitalize">{{ category.category }}</h3>
                                         <p v-if="category.count" class="text-sm text-gray-500">

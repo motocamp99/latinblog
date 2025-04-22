@@ -5,7 +5,6 @@ export default defineNuxtConfig({
   ssr: true,
 
   modules: [
-    '@nuxt/content',
     '@nuxtjs/tailwindcss',
     'shadcn-nuxt',
     '@nuxt/image'
