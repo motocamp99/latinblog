@@ -1,7 +1,7 @@
 <template>
     <div v-if="loaded">
 
-        <section class="mb-12 px-4 lg:px-24" v-if="bannerImages">
+        <section class="mb-12 px-4 lg:px-24 mt-12" v-if="bannerImages">
             <SimpleHero :images="bannerImages" />
         </section>
 

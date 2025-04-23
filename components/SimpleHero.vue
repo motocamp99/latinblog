@@ -24,7 +24,8 @@ const props = defineProps({
                             <CardContent class="p-0 aspect-[16/9]">
 
                                 <NuxtImg :src="`${image.src}`" alt="banner"
-                                    class="w-full h-full object-cover" width=1500 quality=60
+                                    class="w-full h-full object-cover" sizes="100vw sm:400px md:600px lg:1500px xl:2000px "
+                                    quality=70
                                     :modifiers="{ fit: 'cover' }" provider="directus" :placeholder="[50, 25, 75]"  loading="lazy"/>
                             </CardContent>
                         </Card>
