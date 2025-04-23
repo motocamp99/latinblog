@@ -14,12 +14,9 @@ defineProps({
 <template>
   <div class="category-banner">
     <!-- Image with max height -->
-    <NuxtImg 
-      :src="`https://latin.dedyn.io/assets/${category.category_image.id}`"
-      class="banner-image"
-      :alt="category.alt || category.name"
-    />
-    
+    <NuxtImg :src="category.category_image.id" provider="directus" :placeholder="[50, 25, 75]"  loading="lazy" class="banner-image"
+      :alt="category.alt || category.name" width=1500 quality=70  />
+
     <!-- Text overlay centered on image -->
     <div class="text-overlay">
       <h1 class="banner-title">{{ category.name }}</h1>
@@ -50,7 +47,8 @@ defineProps({
   bottom: 0;
   left: 0;
   width: 100%;
-  background-color: rgba(0, 0, 0, 0.7); /* Black with 70% opacity */
+  background-color: rgba(0, 0, 0, 0.7);
+  /* Black with 70% opacity */
   color: white;
   padding: 2rem;
   box-sizing: border-box;
@@ -75,11 +73,11 @@ defineProps({
   .text-overlay {
     padding: 1.5rem;
   }
-  
+
   .banner-title {
     font-size: 2rem;
   }
-  
+
   .banner-description {
     font-size: 1.1rem;
   }

@@ -10,6 +10,13 @@ export default defineNuxtConfig({
     '@nuxt/image'
   ],
 
+  image: {
+    domains: ['latin.dedyn.io'],
+    directus: {
+      baseURL: 'https://latin.dedyn.io/assets'
+    }
+  },
+
   shadcn: {
     /**
      * Prefix for all the imported component

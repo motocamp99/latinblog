@@ -38,8 +38,8 @@ const formatDate = (dateString) => {
         <NuxtLink :to="`/articles/${slugify(article.title)}`">
             <div class="overflow-hidden" style="max-height: 40vh;">
                 <NuxtImg
-                    :src="article.image?.id ? `https://latin.dedyn.io/assets/${article.image.id}` : '/assets/images/panty-icon.jpg'"
-                    quality="40" placeholder />
+                    :src="article.image?.id ? `${article.image.id}` : '2df8b198-befd-4aa5-87cb-49f7da84b604'"
+                    quality=70 width=500 provider="directus"  loading="lazy"/>
             </div>
         </NuxtLink>
 

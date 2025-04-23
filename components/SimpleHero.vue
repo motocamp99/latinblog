@@ -22,13 +22,10 @@ const props = defineProps({
                     <div class="p-1">
                         <Card class="overflow-hidden">
                             <CardContent class="p-0 aspect-[16/9]">
-                                <!--
-                                <img :src="image.src" :alt="image.alt || image.title || ''"
-                                    class="w-full h-full object-cover">-->
 
-                                <NuxtImg :src="image.src" :alt="image.alt || image.title || ''"
-                                    class="w-full h-full object-cover" loading="lazy"
-                                    :modifiers="{ fit: 'cover', quality: 80 }" />
+                                <NuxtImg :src="`${image.src}`" alt="banner"
+                                    class="w-full h-full object-cover" width=1500 quality=60
+                                    :modifiers="{ fit: 'cover' }" provider="directus" :placeholder="[50, 25, 75]"  loading="lazy"/>
                             </CardContent>
                         </Card>
                     </div>

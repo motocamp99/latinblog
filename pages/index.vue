@@ -135,7 +135,7 @@ try {
     const result = await response.json();
     let processed=result.data.map(elem=>{
         return {
-            src:`https://latin.dedyn.io/assets/${elem.id}`,
+            src:`${elem.id}`,
             alt:null,
             title:null
         }
