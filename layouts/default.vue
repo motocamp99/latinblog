@@ -2,7 +2,7 @@
     <div>
 
         <div
-            style="display: flex; flex-direction: row; justify-content: center; align-items:center; padding: 30px; margin-bottom: 60px;">
+            style="display: flex; flex-direction: row; justify-content: center; align-items:center; padding: 30px;">
             <Navigation />
         </div>
 

@@ -20,19 +20,20 @@ const props = defineProps({
     <div>
         <Carousel class="relative w-full" :opts="{ align: 'start' }">
             <CarouselContent>
-                <CarouselItem v-for="category in categories" :key="category.category"
+                <CarouselItem v-for="category in categories" :key="category.slug ? category.slug : slugify(category.name)"
                     class="sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5">
                     <div class="p-1">
-                        <NuxtLink :to="`/category/${category.category}`">
+                        <NuxtLink :to="category.slug ? `/category/${category.slug}` : `/category/${slugify(category.name)}`  ">
                             <Card class="h-full transition-all hover:shadow-lg">
                                 <CardContent class="flex flex-col items-center p-0 aspect-[4/3]">
-                                    <!--
-                                    <NuxtImg :src="`https://latin.dedyn.io/assets/${category.image.image}`" :alt="category.alt"
+                                    
+                                    <NuxtImg :src="`https://latin.dedyn.io/assets/${category.category_image.filename_disk}`" :alt="category.alt"
                                         class="w-full h-full object-cover rounded-t-lg" loading="lazy"
-                                        :modifiers="{ fit: 'cover', quality: 80 }" />-->
-                                        <img :src="`https://latin.dedyn.io/assets/${category.image.image}`" alt="">
+                                        :modifiers="{ fit: 'cover', quality: 80 }" />
+                                   
+
                                     <div class="p-4 w-full text-center">
-                                        <h3 class="text-lg font-semibold capitalize">{{ category.category }}</h3>
+                                        <h3 class="text-lg font-semibold capitalize">{{ category.name }}</h3>
                                         <p v-if="category.count" class="text-sm text-gray-500">
                                             {{ category.count }} artículo{{ category.count !== 1 ? 's' : '' }}
                                         </p>

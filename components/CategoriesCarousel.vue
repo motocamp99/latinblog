@@ -19,8 +19,8 @@ const props = defineProps({
     <div>
         <div v-for="categoryGroup in categoryArticlesArray" :key="categoryGroup.category" class="mb-12">
             <div class="flex justify-between items-center mb-6 px-4">
-                <h4 class="text-2xl font-semibold capitalize">{{ categoryGroup.category }}</h4>
-                <NuxtLink :to="`/revista/category/${categoryGroup.category}`"
+                <h4 class="text-2xl font-semibold capitalize">{{ categoryGroup.category}}</h4>
+                <NuxtLink :to="`/category/${slugify(categoryGroup.category.toLowerCase()) }`"
                     class="text-sm font-medium text-primary hover:underline">
                     Ver todos →
                 </NuxtLink>

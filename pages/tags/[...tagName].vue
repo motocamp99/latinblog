@@ -108,6 +108,57 @@ const fetchContent = async () => {
     console.log('datacontent')
 }
 
+const fetchFeaturedPostsByTagName = async (tagName) => {
+
+    //  const query=`{ "category": { "name":{"_eq" : "${category}" }  } ,"_and" : [{"featured" : {"_eq" : true} }] }` //working
+
+    const query = `{ "tags": { "_some": {"tags_id" : {"_eq" : "${tagName}" } }  } 
+              ,"_and" :
+             [
+              {"featured" : 
+                      {"_eq" : true} 
+              }
+             ] 
+          }`
+
+    const response = await fetch(
+        `https://latin.dedyn.io/items/posts?fields=*.*&filter=${query}`
+        ,
+        {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        }
+    );
+    if (!response.ok) throw new Error('Failed to fetch info data');
+    const result = await response.json();
+    allArticles.value = result.data
+
+    console.log('featured by category', result)
+
+}
+
+const fetchPostsByTagName = async (tagName) => {
+
+    const response = await fetch(
+        `https://latin.dedyn.io/items/posts?fields=*.*&filter={"tags": { "_some": {"tags_id" : {"_eq" : "${tagName}" } }  }} `  //working //fileds=*.* includes all nested fields from relationships
+        ,
+        {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        }
+    );
+    if (!response.ok) throw new Error('Failed to fetch info data');
+    const result = await response.json();
+    allArticles.value = result.data
+
+    console.log('resulted directus filtered by tagname', result)
+
+}
+
 
 // Fetch all articles for the category
 const fetchAllArticles = async () => {

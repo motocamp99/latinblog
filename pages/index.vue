@@ -1,42 +1,35 @@
 <template>
     <div v-if="loaded">
 
-        <!--{{ allArticles }}-->
-
         <section class="mb-12 px-4 lg:px-24" v-if="bannerImages">
             <SimpleHero :images="bannerImages" />
         </section>
 
-        
         <section class="mb-12 px-4 lg:px-24">
             <h4 class="text-2xl font-semibold capitalize">Categorías</h4>
             <CategoryCarousel :categories="categories" />
         </section>
-        <!--
+
+
         <section class="mb-12 lg:px-14">
             <CategoriesCarousel :categoryArticlesArray="categoryArticles" />
-        </section>-->
+        </section>
 
         <section class="px-4 lg:px-24">
             <div v-if="allArticles.length > 0">
 
-                <!--
                 <div class="mb-8">
                     <h2 class="text-2xl font-bold mb-4">Etiquetas</h2>
                     <Tags :tags="tags" @tag-selected="handleTagSelect" />
-                </div>-->
-
-                
-                <h2 class="text-2xl font-bold mb-6">Todos Los Artículos</h2>
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                    <!--
-                    <ArticleCard v-for="article in paginatedArticles" :key="article.title" :article="article"
-                        class="w-full h-full" />-->
-                    <div v-for="article in paginatedArticles" :key="article.title">
-                        {{article.title}}
-                    </div>
                 </div>
 
+                <h2 class="text-2xl font-bold mb-6">Todos Los Artículos</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+
+                    <ArticleCard v-for="article in allArticles" :key="article.title" :article="article"
+                        class="w-full h-full" />
+
+                </div>
 
                 <nav aria-label="Page navigation" class="mt-8 mb-12">
                     <ul class="flex justify-center lg:justify-start flex-wrap gap-1">
@@ -52,8 +45,9 @@
                             </Button>
                         </li>
                         <li v-for="page in visiblePages" :key="page">
-                            <Button variant="outline" @click="changePage(page)"
-                                :class="{ 'bg-primary text-primary-foreground': page === currentPage }">
+                            <Button variant="outline" @click="changePage(page)" :class="{
+                                'bg-primary text-primary-foreground': page === currentPage,
+                            }">
                                 {{ page }}
                             </Button>
                         </li>
@@ -77,7 +71,6 @@
                 <p class="text-gray-500">No se encontraron artículos</p>
             </div>
         </section>
-
     </div>
     <div v-else class="flex justify-center items-center h-64">
         <svg class="animate-spin h-8 w-8 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none"
@@ -88,7 +81,6 @@
             </path>
         </svg>
         <span class="sr-only">Cargando...</span>
-
     </div>
 </template>
 
@@ -100,10 +92,22 @@ const allArticles = ref([]);
 const loaded = ref(false);
 const bannerImages = ref([])
 const categoryArticles = ref([]);
-const tags = ref({});
+const tags = ref([]);
 const categories = ref([]);
 const currentPage = ref(1);
-const itemsPerPage = 12;
+
+const ITEMS_PER_PAGE = 1;
+const MAX_VISIBLE_PAGES = 5;
+
+const totalPosts = ref(0);
+
+/*
+
+const fetchInit =async()=>{
+    const { data } = await fetch('/assets/images/banner/hero-banners.json');
+    console.log('fetch init', data)
+
+}
 
 const fetchBannerImages = async () => {
     const { data } = await useFetch('/assets/images/banner/hero-banners.json');
@@ -111,11 +115,14 @@ const fetchBannerImages = async () => {
     console.log('banners', bannerImages.value)
 };
 
-const fetchContent=async()=>{
+*/
 
+const fetchBanners = async () => {
+
+try {
     const response = await fetch(
-    
-      'https://latin.dedyn.io/items/posts?filter[status][_eq]=published',
+
+        'https://latin.dedyn.io/files?filter[folder][_eq]=bd45adf5-6a58-4260-ba9d-714be838af8e', //working
         {
             method: 'GET',
             headers: {
@@ -126,268 +133,272 @@ const fetchContent=async()=>{
     );
     if (!response.ok) throw new Error('Failed to fetch info data');
     const result = await response.json();
-
-    //console.log('resulted directus', result)
-
-}
-
-const fetchCategories = async()=>{
-    const response = await fetch(
+    let processed=result.data.map(elem=>{
+        return {
+            src:`https://latin.dedyn.io/assets/${elem.id}`,
+            alt:null,
+            title:null
+        }
+    })
     
-      'https://latin.dedyn.io/items/categories?fields=*.*,image,category_image' //get all published posts
-      ,
-        {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                /*'Authorization': `Bearer ${token}`*/
-            },
-        }
-    );
-    if (!response.ok) throw new Error('Failed to fetch info data');
-    const result = await response.json();
-    categories.value=result.data
+    //bannerImages.value=result.data
+    console.log('resulted banners', processed)
+    bannerImages.value=processed
 
-    console.log('resulted categories', result.data)
-
+} catch (error) {
+    console.error('Error fetching categories:');
 }
-
-const fetchPosts=async()=>{
-
-    const response = await fetch(
-    
-      'https://latin.dedyn.io/items/posts?filter[status][_eq]=published&fields=*.*,image' //get all published posts
-      ,
-        {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                /*'Authorization': `Bearer ${token}`*/
-            },
-        }
-    );
-    if (!response.ok) throw new Error('Failed to fetch info data');
-    const result = await response.json();
-    allArticles.value=result.data
-
-    console.log('all posts', result)
-
-}
-
-const fetchPostsByCategory= async (category)=>{
-    const response = await fetch(
-       
-      `https://latin.dedyn.io/items/posts?fields=*.*&filter={ "category": { "name":{"_eq" : "${category}" }  }}` //working
-     
-      ,
-        {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        }
-    );
-    if (!response.ok) throw new Error('Failed to fetch info data');
-    const result = await response.json();
-    allArticles.value=result.data
-
-    console.log('resulted directus category', result)
-
-}
-
-const fetchFeaturedPosts =async()=>{
-     const query=`
-                { "featured" : 
-                        {"_eq" : true} 
-                }
-            `
-
-    const response = await fetch(
-      `https://latin.dedyn.io/items/posts?fields=*.*&filter=${query}` 
-      ,
-        {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        }
-    );
-    if (!response.ok) throw new Error('Failed to fetch info data');
-    const result = await response.json();
-    allArticles.value=result.data
-
-    console.log('featured posts', result)
-
 
 }
 
 
-const fetchFeaturedPostsByCategory = async(category)=>{
+const fetchCategories = async () => {
 
- //  const query=`{ "category": { "name":{"_eq" : "${category}" }  } ,"_and" : [{"featured" : {"_eq" : true} }] }` //working
+    try {
+        const response = await fetch(
 
-    const query=`{ "category": 
-            { "name":
-                {"_eq" : "${category}" }  
-             } ,"_and" :
-               [
-                {"featured" : 
-                        {"_eq" : true} 
-                }
-               ] 
-            }`
+            'https://latin.dedyn.io/items/categories?fields=*.*,category_image.*' 
+            ,
+            {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            }
+        );
+        if (!response.ok) throw new Error('Failed to fetch info data');
+        const result = await response.json();
+        categories.value = result.data
 
-    const response = await fetch(
-      `https://latin.dedyn.io/items/posts?fields=*.*&filter=${query}` 
-      ,
-        {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        }
-    );
-    if (!response.ok) throw new Error('Failed to fetch info data');
-    const result = await response.json();
-    allArticles.value=result.data
+        console.log('resulted categories', result.data)
 
-    console.log('featured by category', result)
+    } catch (error) {
+        console.error('Error fetching categories:');
+    }
+
+}
+
+const fetchPosts = async (page = 1) => {
+    const offset = (page - 1) * ITEMS_PER_PAGE;
+
+    try {
+        const response = await fetch(
+            `https://latin.dedyn.io/items/posts?filter[status][_eq]=published&fields=*.*,image&limit=${ITEMS_PER_PAGE}&offset=${offset}`,
+            {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            }
+        );
+
+        if (!response.ok) throw new Error('Failed to fetch posts');
+
+        const result = await response.json();
+        allArticles.value = result.data;
+        currentPage.value = page;
+
+        console.log('total posts value', allArticles.value)
+
+    } catch (error) {
+        console.error('Error fetching posts:');
+    }
+};
+
+const fetchTags = async () => {
+
+    try {
+        const response = await fetch(
+
+            'https://latin.dedyn.io/items/tags?fields=*.*' 
+            ,
+            {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            }
+        );
+        if (!response.ok) throw new Error('Failed to fetch info data');
+        const result = await response.json();
+        tags.value = result.data
+
+        console.log('all tags', tags.value)
+
+    } catch (error) {
+        console.error('error with tags')
+    }
+
+}
+
+const countPosts = async () => {
+    try {
+        const response = await fetch(
+            'https://latin.dedyn.io/items/posts?aggregate[count]=*',
+            {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            }
+        );
+
+        if (!response.ok) throw new Error('Failed to count posts');
+
+        const result = await response.json();
+        totalPosts.value = result.data[0].count;
+        console.log('total posts value', totalPosts.value)
+
+    } catch (error) {
+        console.error('Error counting posts count');
+    }
+};
+
+
+const fetchFeaturedPosts = async () => {
+
+    try {
+        const query = `
+                  { "featured" : 
+                          {"_eq" : true} 
+                  }
+              `
+        const response = await fetch(
+            `https://latin.dedyn.io/items/posts?filter=${query}&fields=title,description,category.*,date_created,image.*,tags.*`
+            ,
+            {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            }
+        );
+        if (!response.ok) throw new Error('Failed to fetch info data');
+        const result = await response.json();
+        //allArticles.value=result.data
+
+        console.log('featured posts', result.data)
+        return result.data
+
+    } catch (error) {
+        console.error('error with featured POSTS')
+        return null
+
+    }
+
+    return null
 
 }
 
 
-const fetchFeaturedPostsByTagName = async(tagName)=>{
+const organizePostsByCategory = (posts) => {
+    if (!posts || posts.length === 0) return [];
 
- //  const query=`{ "category": { "name":{"_eq" : "${category}" }  } ,"_and" : [{"featured" : {"_eq" : true} }] }` //working
+    const categoriesMap = new Map();
 
-    const query=`{ "tags": { "_some": {"tags_id" : {"_eq" : "${tagName}" } }  } 
-                ,"_and" :
-               [
-                {"featured" : 
-                        {"_eq" : true} 
-                }
-               ] 
-            }`
+    posts.forEach(post => {
+        // Handle cases where category might be missing
+        const category = post.category || { name: 'Featured' };
 
-    const response = await fetch(
-      `https://latin.dedyn.io/items/posts?fields=*.*&filter=${query}` 
-      ,
-        {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+        // Use category name as the unique identifier
+        const categoryName = category.name || 'Featured';
+
+        // Check if we already have this category in our map
+        if (!categoriesMap.has(categoryName)) {
+            // Store both the category object and articles array
+            categoriesMap.set(categoryName, {
+                category: category,  // Store the full category object
+                articles: []        // Initialize empty articles array
+            });
         }
-    );
-    if (!response.ok) throw new Error('Failed to fetch info data');
-    const result = await response.json();
-    allArticles.value=result.data
 
-    console.log('featured by category', result)
+        // Add the post to the articles array for this category
+        categoriesMap.get(categoryName).articles.push(post);
+    });
 
-}
+    // Convert to array format that your component expects
+    return Array.from(categoriesMap.values()).map(item => ({
+        category: item.category.name,  // Just use the name for the category identifier
+        articles: item.articles        // The array of articles
+    }));
+};
 
-const fetchPostsByTagName =async (tagName)=>{
+const populateCategoryCarrousels = async () => {
+    const featuredPosts = await fetchFeaturedPosts();
+    if (featuredPosts) {
+        // First organize by category
+        const organizedPosts = organizePostsByCategory(featuredPosts);
 
-    
+        // Filter out duplicates (in case organizePostsByCategory didn't catch them)
+        const uniqueCategories = new Set();
+        categoryArticles.value = organizedPosts.filter(item => {
+            if (!uniqueCategories.has(item.category)) {
+                uniqueCategories.add(item.category);
+                return true;
+            }
+            return false;
+        });
 
-    const response = await fetch(
-      `https://latin.dedyn.io/items/posts?fields=*.*&filter={"tags": { "_some": {"tags_id" : {"_eq" : "${tagName}" } }  }} `  //working //fileds=*.* includes all nested fields from relationships
-      ,
-        {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        }
-    );
-    if (!response.ok) throw new Error('Failed to fetch info data');
-    const result = await response.json();
-    allArticles.value=result.data
+        console.log('Unique category arrays', categoryArticles.value);
+    }
+};
 
-    console.log('resulted directus filtered by tagname', result)
+// Pagination computed properties
+const totalPages = computed(() => Math.ceil(totalPosts.value / ITEMS_PER_PAGE));
 
-}
-
-
-const filterPosts =async (tagName)=>{
-
-     const response = await fetch(
-      `https://latin.dedyn.io/items/posts?fields=*.*&filter={"tags": { "_some": {"tags_id" : {"_eq" : "Jennifer" } }  }} `  //working
-        
-      ,
-        {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        }
-    );
-    if (!response.ok) throw new Error('Failed to fetch info data');
-    const result = await response.json();
-    allArticles.value=result.data
-
-    console.log('resulted directus filtered', result)
-
-}
-
-
-const paginatedArticles = computed(() => {
-    const start = (currentPage.value - 1) * itemsPerPage;
-    const end = start + itemsPerPage;
-    return allArticles.value.slice(start, end);
-});
-
-// Total number of pages for filtered articles
-const totalPages = computed(() => Math.ceil(allArticles.value.length / itemsPerPage));
-
-// Visible pages for pagination
 const visiblePages = computed(() => {
     const pages = [];
-    const totalVisibleButtons = 5;
-    let startPage = currentPage.value - Math.floor(totalVisibleButtons / 2);
-    let endPage = currentPage.value + Math.floor(totalVisibleButtons / 2);
+    let startPage = 1;
+    let endPage = totalPages.value;
 
-    if (startPage < 1) {
-        startPage = 1;
-        endPage = Math.min(totalVisibleButtons, totalPages.value);
-    }
-    if (endPage > totalPages.value) {
-        endPage = totalPages.value;
-        startPage = Math.max(1, endPage - totalVisibleButtons + 1);
+    if (totalPages.value > MAX_VISIBLE_PAGES) {
+        const half = Math.floor(MAX_VISIBLE_PAGES / 2);
+        startPage = Math.max(1, currentPage.value - half);
+        endPage = Math.min(totalPages.value, currentPage.value + half);
+
+        if (endPage - startPage + 1 < MAX_VISIBLE_PAGES) {
+            if (currentPage.value < totalPages.value / 2) {
+                endPage = Math.min(totalPages.value, startPage + MAX_VISIBLE_PAGES - 1);
+            } else {
+                startPage = Math.max(1, endPage - MAX_VISIBLE_PAGES + 1);
+            }
+        }
     }
 
-    for (let page = startPage; page <= endPage; page++) {
-        pages.push(page);
+    for (let i = startPage; i <= endPage; i++) {
+        pages.push(i);
     }
 
     return pages;
 });
 
-// Change page
+// Change page handler
 const changePage = (page) => {
-    if (page > 0 && page <= totalPages.value) {
-        currentPage.value = page;
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (page > 0 && page <= totalPages.value && page !== currentPage.value) {
+        fetchPosts(page);
+        window.scrollTo({ top: 3000 , behavior:'smooth'});
     }
 };
 
 
-
 onMounted(async () => {
+    
+    await Promise.all([
+        //fetchInit(),
+        countPosts(),
+        //fetchBannerImages(),
+        fetchCategories(),
+        populateCategoryCarrousels(),
+        fetchFeaturedPosts(),
+        countPosts(),
+        fetchPosts(),
+        fetchTags(),
+        fetchBanners()
+    ]);
 
-    await fetchContent()
-    await fetchBannerImages()
-    await fetchPosts()
-    await fetchFeaturedPosts()
-    await fetchCategories()
-    //await fetchFeaturedPostsByCategory('Onlyfans')
-    //await fetchFeaturedPostsByTagName('Argentina')
-    //wait filterPosts('Colombia')
-    //await fetchPostsByTagName('Jennifer')
-    //await fetchPostsByCategory('Latinas')
+    console.log('Category Articles', categoryArticles.value)
 
-    loaded.value = true
+    loaded.value = true;
 
 })
 

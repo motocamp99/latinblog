@@ -1,20 +1,12 @@
 <template>
     <div class="tags-section mb-10">
         <div class="flex flex-wrap gap-2">
-            <!-- 'Todos' tag -->
-            <Badge :variant="selectedTag === 'todos' ? 'default' : 'secondary'"
-                class="cursor-pointer transition-colors hover:opacity-80" @click="selectTag('todos')">
-                <NuxtLink :to="isCategory ? '/revista' : '/revista'" class="text-current no-underline">
-                    Todos
-                </NuxtLink>
-            </Badge>
-
-            <!-- Other tags -->
-            <Badge v-for="(count, tag) in tags" :key="tag" :variant="selectedTag === tag ? 'default' : 'primary'"
-                class="cursor-pointer transition-colors hover:opacity-80" @click="selectTag(tag)">
-                <NuxtLink :to="isCategory ? `/revista/category/${tag}` : `/revista/etiquetas/${tag}`"
+            <!-- Tags list -->
+            <Badge v-for="tag in tags" :key="tag.id" :variant="selectedTag === tag.id ? 'default' : 'primary'"
+                class="cursor-pointer transition-colors hover:opacity-80" @click="selectTag(tag.id)">
+                <NuxtLink :to="isCategory ? `/category/${tag.id}` : `/tags/${tag.id.toLowerCase()}`"
                     class="text-current no-underline">
-                    {{ tag }} ({{ count }})
+                    {{ tag.id }}
                 </NuxtLink>
             </Badge>
         </div>
@@ -23,11 +15,17 @@
 
 <script setup lang="ts">
 import { Badge } from '@/components/ui/badge'
+import type { PropType } from 'vue'
+
+interface Tag {
+    id: string
+}
 
 const props = defineProps({
     tags: {
-        type: Object,
+        type: Array as PropType<Tag[]>,
         required: true,
+        default: () => []
     },
     isCategory: {
         type: Boolean,
@@ -35,7 +33,7 @@ const props = defineProps({
     }
 })
 
-const selectedTag = ref('todos')
+const selectedTag = ref<string>('todos')
 
 const selectTag = (tag: string) => {
     selectedTag.value = tag

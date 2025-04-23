@@ -28,52 +28,57 @@ const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('es-ES', options)
 }
 
+
 </script>
 
 <template>
+
     <Card class="h-full flex flex-col hover:shadow-lg transition-shadow duration-300">
-        <NuxtLink :to="`/articles/${article.stem.split('/')[1]}`">
+
+        <NuxtLink :to="`/articles/${slugify(article.title)}`">
             <div class="overflow-hidden" style="max-height: 40vh;">
-                <NuxtImg :src="article.image" quality="40" />
+                <NuxtImg
+                    :src="article.image?.id ? `https://latin.dedyn.io/assets/${article.image.id}` : '/assets/images/panty-icon.jpg'"
+                    quality="40" placeholder />
             </div>
         </NuxtLink>
 
+
         <CardHeader class="flex-grow">
             <div class="flex items-center gap-2 mb-2">
-                <NuxtLink v-if="article.category" :to="`/category/${article.category}`">
+                <NuxtLink v-if="article.category" :to="`/category/${article.category.name.toLowerCase()}`">
                     <span class="text-xs font-medium px-2 py-1 bg-primary text-primary-foreground rounded-full">
-                        {{ article.category }}
+                        {{ article.category.name }}
                     </span>
                 </NuxtLink>
                 <span class="text-xs text-muted-foreground">
-                    {{ formatDate(article.date) }}
+                    {{ formatDate(article.date_created) }}
                 </span>
             </div>
             <CardTitle class="text-lg line-clamp-2">{{ article.title }}</CardTitle>
             <CardDescription class="line-clamp-3">{{ article.description }}</CardDescription>
         </CardHeader>
 
+        
+
         <CardContent class="pt-0">
             <ArticleTagsComponent :tags="article.tags || []" />
-            <!--
-            <div v-if="article.tags && article.tags.length" class="flex flex-wrap gap-2">
-                <span v-for="tag in article.tags" :key="tag"
-                    class="text-xs px-2 py-1 bg-secondary text-secondary-foreground rounded-full">
-                    {{ tag }}
-                </span>
-            </div>-->
 
         </CardContent>
+       
 
         <CardFooter class="pt-0">
-            <NuxtLink :to="`/articles/${article.stem.split('/')[1]}`"
+            
+            <NuxtLink :to="article.title? `/articles/${slugify(article.title)}` : `test`"
                 class="text-sm font-medium text-primary hover:underline">
                 Leer más →
             </NuxtLink>
+
         </CardFooter>
 
     </Card>
 </template>
+
 
 <style scoped>
 .line-clamp-2 {

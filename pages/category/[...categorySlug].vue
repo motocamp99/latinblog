@@ -2,8 +2,8 @@
     <div>
         <!-- Hero Section -->
         <div v-if="loaded">
-            <section>
-                <NuxtImg :src="`assets/images/categories/${categoryName}.png`" class="w-full" />
+            <section class="mb-6">
+               <CategoryBanner :category="category" />
             </section>
 
             <section class="px-4 lg:px-24">
@@ -81,58 +81,96 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+//import { useRoute } from 'vue-router';
 
 const route = useRoute();
-const categoryName = ref(route.params.categoryName[0]);
+const categorySlug = ref(route.params.categorySlug[0]);
 const allArticles = ref([]); // Store all fetched articles
 const tags = ref({});
 const currentPage = ref(1);
 const itemsPerPage = 4; // Number of articles per page
-const banners = ref([]);
+const category = ref({});
 const loaded = ref(false);
 const featuredArticles = ref([]);
 const selectedTag = ref('todos'); // Default to 'todos' to show all articles
 
-const fetchContent=async()=>{
 
-    const response = await fetch(
-    
-      'https://latin.dedyn.io/items/posts',
-        {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                /*'Authorization': `Bearer ${token}`*/
-            },
-        }
-    );
-    if (!response.ok) throw new Error('Failed to fetch info data');
-    const result = await response.json();
+const fetchCategory = async (slug) => {
+  const response = await fetch(
 
-    console.log('resulted directus', result)
+    `https://latin.dedyn.io/items/categories?fields=*.*&filter={"slug":{"_eq" : "${slug}"  }}` //working
+
+    ,
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+  if (!response.ok) throw new Error('Failed to fetch info data');
+  const result = await response.json();
+  category.value=result.data[0]
+  console.log('resulted category', result.data)
+
+}
+
+
+
+const fetchPostsByCategory = async (slug) => {
+  const response = await fetch(
+
+    `https://latin.dedyn.io/items/posts?fields=*.*&filter={ "category": { "slug":{"_eq" : "${slug}" }  }}` //working
+
+    ,
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+  if (!response.ok) throw new Error('Failed to fetch info data');
+  const result = await response.json();
+  allArticles.value = result.data
+  console.log(slug)
+  console.log('resulted category posts', result)
 
 }
 
-const fetchPosts=async()=>{
+const fetchFeaturedPostsByCategory = async (category) => {
 
-    const response = await fetch(
-    
-      'https://latin.dedyn.io/items/posts',
-        {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                /*'Authorization': `Bearer ${token}`*/
-            },
-        }
-    );
-    if (!response.ok) throw new Error('Failed to fetch info data');
-    const result = await response.json();
+//  const query=`{ "category": { "name":{"_eq" : "${category}" }  } ,"_and" : [{"featured" : {"_eq" : true} }] }` //working
 
-    console.log('resulted directus', result)
+const query = `{ "category": 
+          { "name":
+              {"_eq" : "${category}" }  
+           } ,"_and" :
+             [
+              {"featured" : 
+                      {"_eq" : true} 
+              }
+             ] 
+          }`
+
+const response = await fetch(
+  `https://latin.dedyn.io/items/posts?fields=*.*&filter=${query}`
+  ,
+  {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  }
+);
+if (!response.ok) throw new Error('Failed to fetch info data');
+const result = await response.json();
+allArticles.value = result.data
+
+console.log('featured by category', result)
 
 }
+
 
 
 // Filter articles based on the selected tag
@@ -186,8 +224,11 @@ const changePage = (page) => {
 
 onMounted(async () => {
 
-    await fetchContent(); 
-    await fetchPosts()
+    //await fetchContent(); 
+    //await fetchPosts()
+    await fetchPostsByCategory(categorySlug.value)
+    await fetchCategory(categorySlug.value)
+
     loaded.value = true;
     window.scrollTo(0, 0);
 });
