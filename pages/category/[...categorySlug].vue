@@ -3,25 +3,31 @@
         <!-- Hero Section -->
         <div v-if="loaded">
             <section class="mb-6">
-               <CategoryBanner :category="category" />
+                <CategoryBanner :category="category" />
             </section>
 
             <section class="px-4 lg:px-24">
+
+                <h2 class="text-2xl font-bold mb-6">Artículos Sugeridos</h2>
+                <section class="mb-6">
+                    <FeaturedPostsCarousel :posts="featuredPosts" />
+                </section>
+
                 <div v-if="allArticles.length > 0">
 
-                    <!--
+
                     <div class="mb-8">
                         <h2 class="text-2xl font-bold mb-4">Etiquetas</h2>
                         <Tags :tags="tags" @tag-selected="handleTagSelect" />
-                    </div>-->
+                    </div>
 
 
                     <h2 class="text-2xl font-bold mb-6">Todos Los Artículos</h2>
-                    <!--
+
                     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                        <ArticleCard v-for="article in paginatedArticles" :key="article.title" :article="article"
+                        <ArticleCard v-for="article in allArticles" :key="article.title" :article="article"
                             class="w-full h-full" />
-                    </div>-->
+                    </div>
 
 
                     <nav aria-label="Page navigation" class="mt-8 mb-12">
@@ -38,8 +44,9 @@
                                 </Button>
                             </li>
                             <li v-for="page in visiblePages" :key="page">
-                                <Button variant="outline" @click="changePage(page)"
-                                    :class="{ 'bg-primary text-primary-foreground': page === currentPage }">
+                                <Button variant="outline" @click="changePage(page)" :class="{
+                                    'bg-primary text-primary-foreground': page === currentPage,
+                                }">
                                     {{ page }}
                                 </Button>
                             </li>
@@ -87,64 +94,133 @@ const route = useRoute();
 const categorySlug = ref(route.params.categorySlug[0]);
 const allArticles = ref([]); // Store all fetched articles
 const tags = ref({});
-const currentPage = ref(1);
-const itemsPerPage = 4; // Number of articles per page
 const category = ref({});
 const loaded = ref(false);
-const featuredArticles = ref([]);
-const selectedTag = ref('todos'); // Default to 'todos' to show all articles
+const featuredPosts = ref([]);
+
+const currentPage = ref(1);
+const ITEMS_PER_PAGE = 1;
+const MAX_VISIBLE_PAGES = 5;
+
+
+const totalPosts = ref(0)
 
 
 const fetchCategory = async (slug) => {
-  const response = await fetch(
+    const response = await fetch(
 
-    `https://latin.dedyn.io/items/categories?fields=*.*&filter={"slug":{"_eq" : "${slug}"  }}` //working
+        `https://latin.dedyn.io/items/categories?fields=*.*&filter={"slug":{"_eq" : "${slug}"  }}` //working
+        ,
+        {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        }
+    );
+    if (!response.ok) throw new Error('Failed to fetch info data');
+    const result = await response.json();
+    category.value = result.data[0]
+    console.log('resulted category', result.data)
 
-    ,
-    {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+}
+
+const countCategoryPosts = async (slug) => {
+    try {
+        const response = await fetch(
+            `https://latin.dedyn.io/items/posts?aggregate[count]=id&filter={ "category": { "slug":{"_eq" : "${slug}" }  }}`,
+            {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            }
+        );
+
+        if (!response.ok) throw new Error('Failed to count posts');
+
+        const result = await response.json();
+        totalPosts.value = result.data[0].count;
+        console.log('total post count value', totalPosts.value.id)
+
+    } catch (error) {
+        console.error('Error counting posts count');
     }
-  );
-  if (!response.ok) throw new Error('Failed to fetch info data');
-  const result = await response.json();
-  category.value=result.data[0]
-  console.log('resulted category', result.data)
+};
+
+
+
+const fetchPostsByCategory = async (slug, page = 1) => {
+
+    const offset = (page - 1) * ITEMS_PER_PAGE;
+
+    const response = await fetch(
+
+        `https://latin.dedyn.io/items/posts?fields=*.*&filter={ "category": { "slug":{"_eq" : "${slug}" } }}&limit=${ITEMS_PER_PAGE}&offset=${offset}` //working
+
+        ,
+        {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        }
+    );
+    if (!response.ok) throw new Error('Failed to fetch info data');
+    const result = await response.json();
+    allArticles.value = result.data
+    currentPage.value = page;
+
+    //console.log(slug)
+    console.log('resulted category posts', result.data)
+
+    return result
 
 }
 
 
+const fetchTagCountsByCategory = async (categoryId) => {
+    try {
+        // Make the request
+        const response = await fetch(
+            `https://latin.dedyn.io/items/posts_tags?aggregate[count]=id&groupBy[]=tags_id&filter[posts_id][category][_eq]=${categoryId}`
+        );
 
-const fetchPostsByCategory = async (slug) => {
-  const response = await fetch(
+        if (!response.ok) throw new Error('Failed to fetch tag counts');
 
-    `https://latin.dedyn.io/items/posts?fields=*.*&filter={ "category": { "slug":{"_eq" : "${slug}" }  }}` //working
+        const result = await response.json();
+        tags.value = result.data.map(tag => {
+            return {
+                id: tag.tags_id,
+                count: tag.count.id
+            }
+        })
 
-    ,
-    {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+        console.log('tags', result.data)
+
+    } catch (error) {
+        console.error('Error fetching tag counts:', error);
+        return [];
     }
-  );
-  if (!response.ok) throw new Error('Failed to fetch info data');
-  const result = await response.json();
-  allArticles.value = result.data
-  console.log(slug)
-  console.log('resulted category posts', result)
+};
 
-}
 
-const fetchFeaturedPostsByCategory = async (category) => {
+const handleTagSelect = (tag) => {
+    console.log('clicked')
+    console.log('clicked on', slugify(tag))
+    //selectedTag.value = tag;
 
-//  const query=`{ "category": { "name":{"_eq" : "${category}" }  } ,"_and" : [{"featured" : {"_eq" : true} }] }` //working
+    currentPage.value = 1; // Reset to the first page when a new tag is selected
+};
 
-const query = `{ "category": 
-          { "name":
-              {"_eq" : "${category}" }  
+
+const fetchFeaturedPostsByCategory = async (categoryId) => {
+
+    //  const query=`{ "category": { "name":{"_eq" : "${category}" }  } ,"_and" : [{"featured" : {"_eq" : true} }] }` //working
+
+    const query = `{ "category": 
+          { "id":
+              {"_eq" : "${categoryId}" }  
            } ,"_and" :
              [
               {"featured" : 
@@ -153,81 +229,74 @@ const query = `{ "category":
              ] 
           }`
 
-const response = await fetch(
-  `https://latin.dedyn.io/items/posts?fields=*.*&filter=${query}`
-  ,
-  {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  }
-);
-if (!response.ok) throw new Error('Failed to fetch info data');
-const result = await response.json();
-allArticles.value = result.data
+    const response = await fetch(
+        `https://latin.dedyn.io/items/posts?fields=*.*&filter=${query}`
+        ,
+        {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        }
+    );
+    if (!response.ok) throw new Error('Failed to fetch info data');
+    const result = await response.json();
+    featuredPosts.value = result.data
 
-console.log('featured by category', result)
+    console.log('featured by category', featuredPosts.value)
 
 }
 
+// Pagination computed properties
+const totalPages = computed(() => Math.ceil(totalPosts.value.id / ITEMS_PER_PAGE));
 
-
-// Filter articles based on the selected tag
-const filteredArticles = computed(() => {
-    if (selectedTag.value === 'todos') {
-        return allArticles.value; // Show all articles
-    }
-    return allArticles.value.filter((article) => article.tags && article.tags.includes(selectedTag.value));
-});
-
-// Paginate filtered articles
-const paginatedArticles = computed(() => {
-    const start = (currentPage.value - 1) * itemsPerPage;
-    const end = start + itemsPerPage;
-    return filteredArticles.value.slice(start, end);
-});
-
-// Total number of pages for filtered articles
-const totalPages = computed(() => Math.ceil(filteredArticles.value.length / itemsPerPage));
-
-// Visible pages for pagination
 const visiblePages = computed(() => {
     const pages = [];
-    const totalVisibleButtons = 5;
-    let startPage = currentPage.value - Math.floor(totalVisibleButtons / 2);
-    let endPage = currentPage.value + Math.floor(totalVisibleButtons / 2);
+    let startPage = 1;
+    let endPage = totalPages.value;
 
-    if (startPage < 1) {
-        startPage = 1;
-        endPage = Math.min(totalVisibleButtons, totalPages.value);
-    }
-    if (endPage > totalPages.value) {
-        endPage = totalPages.value;
-        startPage = Math.max(1, endPage - totalVisibleButtons + 1);
+    if (totalPages.value > MAX_VISIBLE_PAGES) {
+        const half = Math.floor(MAX_VISIBLE_PAGES / 2);
+        startPage = Math.max(1, currentPage.value - half);
+        endPage = Math.min(totalPages.value, currentPage.value + half);
+
+        if (endPage - startPage + 1 < MAX_VISIBLE_PAGES) {
+            if (currentPage.value < totalPages.value / 2) {
+                endPage = Math.min(totalPages.value, startPage + MAX_VISIBLE_PAGES - 1);
+            } else {
+                startPage = Math.max(1, endPage - MAX_VISIBLE_PAGES + 1);
+            }
+        }
     }
 
-    for (let page = startPage; page <= endPage; page++) {
-        pages.push(page);
+    for (let i = startPage; i <= endPage; i++) {
+        pages.push(i);
     }
 
     return pages;
 });
 
-// Change page
+// Change page handler
 const changePage = (page) => {
-    if (page > 0 && page <= totalPages.value) {
-        currentPage.value = page;
-        //window.scrollTo(0, 0);
+    if (page > 0 && page <= totalPages.value && page !== currentPage.value) {
+        fetchPostsByCategory(categorySlug.value, page);
+        window.scrollTo({ top: 1000, behavior: 'smooth' });
     }
 };
+
+
 
 onMounted(async () => {
 
     //await fetchContent(); 
     //await fetchPosts()
-    await fetchPostsByCategory(categorySlug.value)
     await fetchCategory(categorySlug.value)
+    await fetchPostsByCategory(categorySlug.value)
+    await fetchFeaturedPostsByCategory(category.value.id)
+    await countCategoryPosts(categorySlug.value)
+    //await processData()
+    //await countTags()
+    await fetchTagCountsByCategory(category.value.id)
 
     loaded.value = true;
     window.scrollTo(0, 0);

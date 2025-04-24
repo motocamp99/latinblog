@@ -36,7 +36,7 @@ const formatDate = (dateString) => {
     <Card class="h-full flex flex-col hover:shadow-lg transition-shadow duration-300">
 
         <NuxtLink :to="`/articles/${slugify(article.title)}`">
-            <div class="overflow-hidden" style="max-height: 40vh;">
+            <div class="overflow-hidden" style="max-height: 50vh;">
                 <NuxtImg
                     :src="article.image?.id ? `${article.image.id}` : '2df8b198-befd-4aa5-87cb-49f7da84b604'"
                     quality=70 width=500 provider="directus"  loading="lazy"/>
@@ -46,9 +46,9 @@ const formatDate = (dateString) => {
 
         <CardHeader class="flex-grow">
             <div class="flex items-center gap-2 mb-2">
-                <NuxtLink v-if="article.category" :to="`/category/${article.category.name.toLowerCase()}`">
+                <NuxtLink v-if="article.category" :to="`/category/${slugify(article.category.name)}`">
                     <span class="text-xs font-medium px-2 py-1 bg-primary text-primary-foreground rounded-full">
-                        {{ article.category.name }}
+                        {{article.category.name}}
                     </span>
                 </NuxtLink>
                 <span class="text-xs text-muted-foreground">

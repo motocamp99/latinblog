@@ -28,7 +28,7 @@ const props = defineProps({
                                 <CardContent class="flex flex-col items-center p-0 aspect-[4/3]">
                                     
                                     <NuxtImg :src="`${category.category_image.filename_disk}`" :alt="category.alt"
-                                        class="w-full h-full object-cover rounded-t-lg" loading="lazy" width=300 quality=60
+                                        class="w-full h-full object-cover rounded-t-lg" loading="lazy" width=300 quality=70
                                         :modifiers="{ fit: 'cover'}" provider="directus"/>
                                    
 
