@@ -4,12 +4,12 @@
         <div v-if="loaded">
 
             <div class="mb-12">
-                <!--
-                <BannerImageComponent :imageUrl="article.image" :title="article.title"
-                    :subtitle="article.description && article.description.length > 180 ? `${article.description.slice(0, 180)}...` : article.description" />-->
+                
+                <BannerImageComponent :imageUrl="article.image?.id ? `${article.image.id}` : '310dc800-3921-43ce-86a2-a8f2b2d42f2f'" :title="article.title"
+                    :subtitle="article.description && article.description.length > 180 ? `${article.description.slice(0, 180)}...` : article.description" />
             </div>
 
-            <div style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+            <div style="display: flex; flex-direction: column; justify-content: center; align-items: center;" v-if="article" >
 
                 <div class="flex-1 w-7xl">
 
@@ -17,27 +17,24 @@
                         <div id="details-container" class="flex" style="flex-direction: row; position: relative;">
                             <div id="details-1" style="width: 60%; padding-right: 50px;">
                                 <h2 class="text-2xl font-semibold mb-3">Descripción</h2>
-                                <!--<p class="text-muted-foreground">{{ article.description }}</p>-->
+                                <p class="text-muted-foreground">{{ article.description }}</p>
                             </div>
                             <div id="details-2" style="width: 40%;">
                                 <h2 class="text-2xl font-semibold mb-3">Detalles</h2>
                                 <ul class="space-y-1">
                                     <li class="flex">
                                         <span class="detail font-medium w-24">Fecha:</span>
-                                        <!--<span>{{ formatDate(article.date) }}</span>-->
+                                        <span>{{ formatDate(article.date_created) }}</span>
                                     </li>
                                     <li class="flex">
                                         <span class="detail font-medium w-24">Categoría:</span>
-                                        <!--
-                                        <NuxtLink :to="`/revista/category/${article.category}`"
-                                            class="text-primary hover:underline">
-                                            {{ article.category }}
-                                        </NuxtLink>-->
+                                        {{ article.category.name }}
                                     </li>
                                     <li class="flex items-start">
                                         <span class="detail font-medium w-24">Etiquetas:</span>
-                                        <!--
-                                        <ArticleTagsBlackComponent :tags="article.tags || []" />-->
+                            
+                                        <ArticleTagsBlackComponent :tags="article.tags || []" />
+                                
                                     </li>
                                 </ul>
 
@@ -50,19 +47,18 @@
                 <div style="display: flex; flex-direction: row; width: 90vw; position: relative; gap:100px">
 
                     <div class="toc-container">
+                        
+                        
                         <Card class="p-4 bg-secondary">
                             <h2 class="text-2xl font-semibold mb-4">Tabla de Contenido</h2>
-                            <ul style="display: flex; flex-direction: column; gap: 7px;">
-                                TOC here
-                            </ul>
+                            <TableOfContents  :html-content="processHtml(article.content)" />
                         </Card>
                     </div>
 
 
                     <div style="width: 60vw;">
-                        <div class="p-4" id="article-card">
-                            Content HERE
-                        </div>
+                        <article v-html="processHtml(article.content)"  class="p-4" id="article-card" >
+                        </article>
                     </div>
                 </div>
             </div>
@@ -86,9 +82,15 @@
 import { Card } from '@/components/ui/card'
 import { ref, onMounted } from 'vue';
 let article = ref({})
-const slug = useRoute().params.slug[0].toString()
+//const slug = useRoute().params.slug[0].toString()
 const loaded = ref(false)
+const route = useRoute()
+//const { id, slug } = route.params
+const id=route.params.id
+const slug=route.params.slug? route.params.slug[0]: ''
 
+const processedHtml = ref('')
+const tocItems = ref([])
 
 useHead({
     link: [
@@ -103,6 +105,24 @@ useHead({
 })
 
 
+const processHtml = (html) => {
+  const parser = new DOMParser()
+  const doc = parser.parseFromString(html, 'text/html')
+  const headings = doc.querySelectorAll('h2')
+  console.log('headings')
+
+  tocItems.value = Array.from(headings).map((heading, index) => {
+    const id = heading.textContent 
+      ? slugify(heading.textContent) 
+      : `section-${index}` // Fallback if empty heading
+    heading.id = id
+    return { id, text: heading.textContent || '' }
+  })
+
+  return doc.body.innerHTML
+}
+
+
 const formatDate = (dateString) => {
     const date = new Date(dateString)
     return date.toLocaleDateString('es-ES', {
@@ -113,46 +133,26 @@ const formatDate = (dateString) => {
 }
 
 
-const fetchContent=async()=>{
+const fetchArticle=async(id)=>{
 
     const response = await fetch(
     
-      'https://latin.dedyn.io/items/posts',
+      `https://latin.dedyn.io/items/posts/${id}?fields=*.*`,
         {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                /*'Authorization': `Bearer ${token}`*/
             },
         }
     );
     if (!response.ok) throw new Error('Failed to fetch info data');
     const result = await response.json();
-
-    console.log('resulted directus', result)
-
-}
-
-const fetchArticle=async(slug)=>{
-
-    const response = await fetch(
-    
-      `https://latin.dedyn.io/items/posts/${slug}`,
-        {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                /*'Authorization': `Bearer ${token}`*/
-            },
-        }
-    );
-    if (!response.ok) throw new Error('Failed to fetch info data');
-    const result = await response.json();
-
-    console.log('resulted directus', result)
+    article.value=result.data
+    console.log('resulted article', result.data)
 
 }
 
+/*
 const socialLinks = computed(() => ({
     ig: article.value.meta?.ig,
     fb: article.value.meta?.fb,
@@ -161,9 +161,14 @@ const socialLinks = computed(() => ({
     x: article.value.meta?.x,
     phub: article.value.meta?.phub,
 }))
-
+*/
 
 onMounted(async () => {
+
+    await fetchArticle(id)
+
+    /*
+
     await fetchContent()
     await fetchArticle(slug)
 
@@ -177,7 +182,8 @@ onMounted(async () => {
         twitterCard: 'summary_large_image'
     })
 
-
+    */
+    
     loaded.value = true
 })
 
@@ -195,26 +201,35 @@ onMounted(async () => {
     width: 60vw;
 }
 
-#article-text {
+#article-card {
     width: 60vw;
     line-height: 1.7;
 }
 
-#article-text p {
-    /*margin: 15px;*/
-    margin-top: 10px;
-    margin-bottom: 10px;
+#article-card h1{
+    font-size: 3rem;
+    color: rgb(81, 81, 81);
+    font-weight: bold;
 }
 
-#article-text a {
+#article-card h2{
+    font-size: 2rem;
+    color: rgb(81, 81, 81);
+    font-weight: bold;
+}
+
+#article-card p {
+    /*margin: 15px;*/
+    font-size: 18px;
+    margin-top: 10px !important;
+    margin-bottom: 10px !important;
+}
+
+#article-card a {
     margin-top: 10vh !important;
     margin-bottom: 10vh !important;
 }
 
-#article-text h2 {
-    color: rgb(81, 81, 81);
-    font-weight: bold;
-}
 
 /* TOC styling */
 .toc-container {

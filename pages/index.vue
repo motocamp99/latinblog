@@ -5,6 +5,12 @@
             <SimpleHero :images="bannerImages" />
         </section>
 
+        <section class="mb-12 px-4 lg:px-24 mt-12">
+            <h2 class="text-2xl font-bold mb-6">Artículos Sugeridos</h2>
+
+            <FeaturedPostsCarousel :posts="featuredPosts" />
+        </section>
+
         <section class="mb-12 px-4 lg:px-24">
             <h4 class="text-2xl font-semibold capitalize">Categorías</h4>
             <CategoryCarousel :categories="categories" />
@@ -95,27 +101,11 @@ const categoryArticles = ref([]);
 const tags = ref([]);
 const categories = ref([]);
 const currentPage = ref(1);
-
-const ITEMS_PER_PAGE = 1;
+const featuredPosts = ref([]);
+const ITEMS_PER_PAGE = 4;
 const MAX_VISIBLE_PAGES = 5;
 
 const totalPosts = ref(0);
-
-/*
-
-const fetchInit =async()=>{
-    const { data } = await fetch('/assets/images/banner/hero-banners.json');
-    console.log('fetch init', data)
-
-}
-
-const fetchBannerImages = async () => {
-    const { data } = await useFetch('/assets/images/banner/hero-banners.json');
-    bannerImages.value = data.value;
-    console.log('banners', bannerImages.value)
-};
-
-*/
 
 const fetchBanners = async () => {
 
@@ -264,7 +254,7 @@ const fetchFeaturedPosts = async () => {
                   }
               `
         const response = await fetch(
-            `https://latin.dedyn.io/items/posts?filter=${query}&fields=title,description,category.*,date_created,image.*,tags.*`
+            `https://latin.dedyn.io/items/posts?filter=${query}&fields=id,title,description,category.*,date_created,image.*,tags.*`
             ,
             {
                 method: 'GET',
@@ -275,7 +265,7 @@ const fetchFeaturedPosts = async () => {
         );
         if (!response.ok) throw new Error('Failed to fetch info data');
         const result = await response.json();
-        //allArticles.value=result.data
+        featuredPosts.value=result.data
 
         console.log('featured posts', result.data)
         return result.data

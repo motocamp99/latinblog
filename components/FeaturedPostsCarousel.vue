@@ -35,7 +35,7 @@ const props = defineProps({
                 <CarouselItem v-for="post in posts" :key="post.id"
                     class="sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/3">
                     <div class="p-1">
-                        <ArticleCard :article="post" />
+                        <ArticleCard :article="post" :img_width=600 />
                     </div>
                 </CarouselItem>
             </CarouselContent>

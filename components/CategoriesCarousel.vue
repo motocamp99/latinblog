@@ -31,7 +31,7 @@ const props = defineProps({
                     <CarouselItem v-for="article in categoryGroup.articles" :key="article.title"
                         class="sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5">
                         <div class="p-1 h-full">
-                            <ArticleCard :article="article" />
+                            <ArticleCard :article="article" img_height="35vh" :img_width=350 />
                         </div>
                     </CarouselItem>
                 </CarouselContent>

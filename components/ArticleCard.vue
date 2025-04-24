@@ -20,6 +20,12 @@ const props = defineProps({
             category: '',
             tags: []
         })
+    },img_height: {
+        type: String,
+        default:"40vh"
+    },img_width:{
+        type: Number,
+        default:500
     }
 })
 
@@ -33,13 +39,13 @@ const formatDate = (dateString) => {
 
 <template>
 
-    <Card class="h-full flex flex-col hover:shadow-lg transition-shadow duration-300">
+    <Card class="overflow-hidden h-full flex flex-col hover:shadow-lg transition-shadow duration-300">
 
-        <NuxtLink :to="`/articles/${slugify(article.title)}`">
-            <div class="overflow-hidden" style="max-height: 50vh;">
+        <NuxtLink :to="`/articles/${article.id}/${article.slug? article.slug : slugify(article.title)}`">
+            <div class="overflow-hidden" :style="`height: ${img_height}`"> 
                 <NuxtImg
                     :src="article.image?.id ? `${article.image.id}` : '2df8b198-befd-4aa5-87cb-49f7da84b604'"
-                    quality=70 width=500 provider="directus"  loading="lazy"/>
+                    quality=70 :width=img_width provider="directus"  loading="lazy"/>
             </div>
         </NuxtLink>
 
@@ -69,7 +75,7 @@ const formatDate = (dateString) => {
 
         <CardFooter class="pt-0">
             
-            <NuxtLink :to="article.title? `/articles/${slugify(article.title)}` : `test`"
+            <NuxtLink :to="`/articles/${article.id}/${article.slug? article.slug : slugify(article.title)}`"
                 class="text-sm font-medium text-primary hover:underline">
                 Leer más →
             </NuxtLink>

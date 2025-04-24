@@ -99,7 +99,7 @@ const loaded = ref(false);
 const featuredPosts = ref([]);
 
 const currentPage = ref(1);
-const ITEMS_PER_PAGE = 1;
+const ITEMS_PER_PAGE = 4;
 const MAX_VISIBLE_PAGES = 5;
 
 
