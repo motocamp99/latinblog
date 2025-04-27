@@ -15,7 +15,7 @@ defineProps({
 <template>
     <div class="category-banner">
         <!-- Responsive Image with different sizes for different screens -->
-        <NuxtImg :src="category.category_image.id" provider="directus" :placeholder="[50, 25, 75]" loading="lazy"
+        <NuxtImg :src="category.category_image?.id ? category.category_image.id : '310dc800-3921-43ce-86a2-a8f2b2d42f2f' " provider="directus" :placeholder="[50, 25, 75]" loading="lazy"
             class="banner-image" :alt="category.alt || category.name"
             quality="70"
             sizes="100vw sm:400px md:600px lg:1500px xl:2000px "/>

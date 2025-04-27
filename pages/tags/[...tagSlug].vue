@@ -1,7 +1,7 @@
 <template>
     <div>
         <!-- Hero Section -->
-      
+
         <div v-if="loaded">
 
             <section class="mb-6">
@@ -11,7 +11,7 @@
 
             <section class="px-4 lg:px-24">
 
-                <h2 class="text-2xl font-bold mb-6">Artículos Sugeridos</h2>
+                <h2 class="text-2xl font-bold mb-6">Artículos Sugeridos </h2>
                 <section class="mb-6">
                     <FeaturedPostsCarousel :posts="featuredArticles" />
                 </section>
@@ -25,7 +25,7 @@
                     </div>-->
 
 
-                    <h2 class="text-2xl font-bold mb-6">Todos Los Artículos</h2>
+                    <h2 class="text-2xl font-bold mb-6">Todos Los Artículos ({{ totalPosts }}) </h2>
                     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                         <ArticleCard v-for="article in allArticles" :key="article.title" :article="article"
                             class="w-full h-full" />
@@ -72,6 +72,12 @@
                 <div v-else class="text-center py-12">
                     <p class="text-gray-500">No se encontraron artículos</p>
                 </div>
+
+                <div class="mb-8">
+                    <h2 class="text-2xl font-bold mb-4">Más Etiquetas</h2>
+                    <Tags :tags="tags" @tag-selected="handleTagSelect" />
+                </div>
+
             </section>
 
 
@@ -95,14 +101,13 @@ import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 
 const route = useRoute();
-const tagName = ref(deslugify(route.params.tagName[0]));
+const tagName = ref(deslugify(route.params.tagSlug[0]));
 const allArticles = ref([]); // Store all fetched articles
 const tag = ref({});
 const loaded = ref(false);
 const featuredArticles = ref([]);
-const selectedTag = ref('todos'); // Default to 'todos' to show all articles
+const tags = ref([]);
 const totalPosts = ref(0)
-
 const currentPage = ref(1);
 const ITEMS_PER_PAGE = 4;
 const MAX_VISIBLE_PAGES = 5;
@@ -131,6 +136,32 @@ const fetchTag = async (tagName) => {
 
 }
 
+const fetchTags = async () => {
+
+    try {
+        const response = await fetch(
+
+            'https://latin.dedyn.io/items/tags?fields=*.*'
+            ,
+            {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            }
+        );
+        if (!response.ok) throw new Error('Failed to fetch info data');
+        const result = await response.json();
+        tags.value = result.data
+
+        console.log('all tags', tags.value)
+
+    } catch (error) {
+        console.error('error with tags')
+    }
+
+}
+
 
 const countPosts = async (tagName) => {
 
@@ -147,7 +178,7 @@ const countPosts = async (tagName) => {
         );
         if (!response.ok) throw new Error('Failed to fetch info data');
         const result = await response.json();
-        totalPosts.value = result.data[0].count;
+        totalPosts.value = result.data[0].count.id;
 
     } catch (error) {
         console.error('error with posts')
@@ -181,7 +212,7 @@ const fetchFeaturedPostsByTagName = async (tagName) => {
     );
     if (!response.ok) throw new Error('Failed to fetch info data');
     const result = await response.json();
-    featuredArticles.value=result.data
+    featuredArticles.value = result.data
     //allArticles.value = result.data
 
     console.log('featured by tags', result.data)
@@ -214,7 +245,7 @@ const fetchPostsByTagName = async (tagName, page = 1) => {
 
 }
 
-const totalPages = computed(() => Math.ceil(totalPosts.value.id / ITEMS_PER_PAGE));
+const totalPages = computed(() => Math.ceil(totalPosts.value / ITEMS_PER_PAGE));
 
 const visiblePages = computed(() => {
     const pages = [];
@@ -254,6 +285,7 @@ const changePage = (page) => {
 onMounted(async () => {
 
     await fetchTag(tagName.value)
+    await fetchTags()
     await fetchPostsByTagName(tagName.value)
     await countPosts(tagName.value)
     await fetchFeaturedPostsByTagName(tagName.value)

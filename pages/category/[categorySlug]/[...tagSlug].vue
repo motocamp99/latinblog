@@ -1,32 +1,38 @@
 <template>
+
     <div>
         <!-- Hero Section -->
+
         <div v-if="loaded">
+
             <section class="mb-6">
-                <CategoryBanner :category="category" />
+                <TagBanner :tag="tag" />
             </section>
 
-            <section class="px-4 lg:px-24">
 
-                <h2 class="text-2xl font-bold mb-6">Artículos Sugeridos</h2>
+            <section class="px-4 lg:px-24">
+                
+                <h2 class="text-2xl font-bold mb-6">Artículos Sugeridos (Tag: <span> {{ tagName }} </span>) </h2>
                 <section class="mb-6">
-                    <FeaturedPostsCarousel :posts="featuredPosts" />
+                    <FeaturedPostsCarousel :posts="featuredArticles" />
                 </section>
+                
 
                 <div v-if="allArticles.length > 0">
 
-
+                    <!--
                     <div class="mb-8">
                         <h2 class="text-2xl font-bold mb-4">Etiquetas</h2>
                         <Tags :tags="tags" @tag-selected="handleTagSelect" />
-                    </div>
+                    </div>-->
 
 
-                    <h2 class="text-2xl font-bold mb-6">Todos Los Artículos</h2>
-
+                    <h2 class="text-2xl font-bold mb-6">Todos Los Artículos ({{ totalPosts }}) </h2>
                     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                        
                         <ArticleCard v-for="article in allArticles" :key="article.title" :article="article"
                             class="w-full h-full" />
+                    
                     </div>
 
 
@@ -64,12 +70,14 @@
                             </li>
                         </ul>
                     </nav>
+
                 </div>
 
                 <div v-else class="text-center py-12">
                     <p class="text-gray-500">No se encontraron artículos</p>
                 </div>
             </section>
+
 
         </div>
         <div v-else class="flex justify-center items-center h-64">
@@ -84,51 +92,82 @@
         </div>
 
     </div>
+
 </template>
 
+
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-//import { useRoute } from 'vue-router';
 
 const route = useRoute();
-const categorySlug = ref(route.params.categorySlug[0]);
-const allArticles = ref([]); // Store all fetched articles
-const tags = ref({});
-const category = ref({});
+const tagSlug = ref(route.params.tagSlug[0]);
+const tagName = ref(deslugify(route.params.tagSlug[0]));
+const categoryName = ref(deslugify(route.params.categorySlug))
+const categorySlug = route.params.categorySlug
+const tag = ref({})
+const allArticles = ref([]);
 const loaded = ref(false);
-const featuredPosts = ref([]);
+const featuredArticles = ref([]);
 
 const currentPage = ref(1);
-const ITEMS_PER_PAGE = 4;
+const ITEMS_PER_PAGE = 1;
 const MAX_VISIBLE_PAGES = 5;
-
-
 const totalPosts = ref(0)
 
+//const tagSlug
 
-const fetchCategory = async (slug) => {
-    const response = await fetch(
+import { ref, onMounted } from 'vue';
 
-        `https://latin.dedyn.io/items/categories?fields=*.*&filter={"slug":{"_eq" : "${slug}"  }}` //working
-        ,
-        {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        }
-    );
-    if (!response.ok) throw new Error('Failed to fetch info data');
-    const result = await response.json();
-    category.value = result.data[0]
-    console.log('resulted category', result.data)
+
+const fetchTag = async (tagSlug) => {
+
+    try {
+        const response = await fetch(
+
+            `https://latin.dedyn.io/items/tags?fields=*.*&filter={"slug":{"_eq" : "${tagSlug}"  }}` //working
+            ,
+            {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            }
+        );
+        if (!response.ok) throw new Error('Failed to fetch info data');
+        const result = await response.json();
+
+        tag.value = result.data[0]
+        tag.value.description = categoryName.value
+        //console.log('resulted tag', tag.value)
+
+    } catch (error) {
+        console.log('error with tag')
+    }
 
 }
 
-const countCategoryPosts = async (slug) => {
+const countCategoryTagPosts = async (categorySlug, tagName) => {
     try {
+        
+        const query = `{
+                        "category": { 
+                                "slug":{
+                                    "_eq" : "${categorySlug}"
+                                    }
+                             },
+                        
+                        "_and": [
+                            {"tags":{
+                             "_some": {
+                                "tags_id" : {"_eq" : "${tagName}" } }  
+                                } 
+                            }]
+                        
+                        }`
+        
+
         const response = await fetch(
-            `https://latin.dedyn.io/items/posts?aggregate[count]=id&filter={ "category": { "slug":{"_eq" : "${slug}" }  }}`,
+            `https://latin.dedyn.io/items/posts?aggregate[countDistinct]=id&fields=*.*&filter=${query}`,
+     
             {
                 method: 'GET',
                 headers: {
@@ -140,8 +179,10 @@ const countCategoryPosts = async (slug) => {
         if (!response.ok) throw new Error('Failed to count posts');
 
         const result = await response.json();
-        totalPosts.value = result.data[0].count;
-        console.log('total post count value', totalPosts.value.id)
+        
+        totalPosts.value=result.data[0].countDistinct.id 
+        console.log('total posts', totalPosts.value)
+ 
 
     } catch (error) {
         console.error('Error counting posts count');
@@ -150,13 +191,28 @@ const countCategoryPosts = async (slug) => {
 
 
 
-const fetchPostsByCategory = async (slug, page = 1) => {
+const fetchPostsByCategoryAndTag = async (categorySlug, tagName, page = 1) => {
 
     const offset = (page - 1) * ITEMS_PER_PAGE;
 
+    const query = `{
+                    "category": { 
+                            "slug":{
+                                "_eq" : "${categorySlug}"
+                                }
+                            },
+                        
+                    "_and": [
+                        {"tags":{
+                            "_some": {
+                            "tags_id" : {"_eq" : "${tagName}" } }  
+                            }
+                        }]
+                    }`
+
     const response = await fetch(
 
-        `https://latin.dedyn.io/items/posts?fields=*.*&filter={ "category": { "slug":{"_eq" : "${slug}" } }}&limit=${ITEMS_PER_PAGE}&offset=${offset}` //working
+        `https://latin.dedyn.io/items/posts?fields=*.*&filter=${query}&limit=${ITEMS_PER_PAGE}&offset=${offset}` //working
 
         ,
         {
@@ -172,83 +228,46 @@ const fetchPostsByCategory = async (slug, page = 1) => {
     currentPage.value = page;
 
     //console.log(slug)
-    console.log('resulted category posts', result.data)
+    console.log('resulted category tag posts2', result.data)
 
     return result
 
 }
 
+const fetchFeaturedPostsByTagName = async (tagName) => {
 
-const fetchTagCountsByCategory = async (categoryId) => {
-    try {
-        // Make the request
-        const response = await fetch(
-            `https://latin.dedyn.io/items/posts_tags?aggregate[count]=id&groupBy[]=tags_id&filter[posts_id][category][_eq]=${categoryId}`
-        );
+//  const query=`{ "category": { "name":{"_eq" : "${category}" }  } ,"_and" : [{"featured" : {"_eq" : true} }] }` //working
 
-        if (!response.ok) throw new Error('Failed to fetch tag counts');
+const query = `{ "tags": { "_some": {"tags_id" : {"_eq" : "${tagName}" } }  } 
+          ,"_and" :
+         [
+          {"featured" : 
+                  {"_eq" : true} 
+          }
+         ] 
+      }`
 
-        const result = await response.json();
-        tags.value = result.data.map(tag => {
-            return {
-                id: tag.tags_id,
-                count: tag.count.id
-            }
-        })
-
-        console.log('tags', result.data)
-
-    } catch (error) {
-        console.error('Error fetching tag counts:', error);
-        return [];
+const response = await fetch(
+    `https://latin.dedyn.io/items/posts?fields=*.*&filter=${query}`
+    ,
+    {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
     }
-};
+);
+if (!response.ok) throw new Error('Failed to fetch info data');
+const result = await response.json();
+featuredArticles.value=result.data
+//allArticles.value = result.data
 
-
-const handleTagSelect = (tag) => {
-    console.log('clicked')
-    console.log('clicked on', slugify(tag))
-    //selectedTag.value = tag;
-
-    currentPage.value = 1; // Reset to the first page when a new tag is selected
-};
-
-
-const fetchFeaturedPostsByCategory = async (categoryId) => {
-
-    //  const query=`{ "category": { "name":{"_eq" : "${category}" }  } ,"_and" : [{"featured" : {"_eq" : true} }] }` //working
-
-    const query = `{ "category": 
-          { "id":
-              {"_eq" : "${categoryId}" }  
-           } ,"_and" :
-             [
-              {"featured" : 
-                      {"_eq" : true} 
-              }
-             ] 
-          }`
-
-    const response = await fetch(
-        `https://latin.dedyn.io/items/posts?fields=*.*&filter=${query}`
-        ,
-        {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        }
-    );
-    if (!response.ok) throw new Error('Failed to fetch info data');
-    const result = await response.json();
-    featuredPosts.value = result.data
-
-    console.log('featured by category', featuredPosts.value)
+console.log('featured by tags', result.data)
 
 }
 
 // Pagination computed properties
-const totalPages = computed(() => Math.ceil(totalPosts.value.id / ITEMS_PER_PAGE));
+const totalPages = computed(() => Math.ceil(totalPosts.value / ITEMS_PER_PAGE));
 
 const visiblePages = computed(() => {
     const pages = [];
@@ -279,79 +298,35 @@ const visiblePages = computed(() => {
 // Change page handler
 const changePage = (page) => {
     if (page > 0 && page <= totalPages.value && page !== currentPage.value) {
-        fetchPostsByCategory(categorySlug.value, page);
+        fetchPostsByCategoryAndTag(categorySlug, tagName.value, page);
         window.scrollTo({ top: 1000, behavior: 'smooth' });
     }
 };
 
 
-
 onMounted(async () => {
 
-    //await fetchContent(); 
-    //await fetchPosts()
-    await fetchCategory(categorySlug.value)
-    await fetchPostsByCategory(categorySlug.value)
-    await fetchFeaturedPostsByCategory(category.value.id)
-    await countCategoryPosts(categorySlug.value)
-    //await processData()
-    //await countTags()
-    await fetchTagCountsByCategory(category.value.id)
+    await Promise.all([
+        //fetchInit(),
 
+    ]);
+
+    
+
+    //console.log('Category Articles', categoryArticles.value)
+    //console.log('tag params', params.value.tagSlug[0])
+    //console.log('tagSlug', tagSlug.value)
+    await fetchTag(tagSlug.value)
+    await countCategoryTagPosts(categorySlug, tagName.value)
+    await fetchPostsByCategoryAndTag(categorySlug, tagName.value)
+    await fetchFeaturedPostsByTagName(tagName.value)
+    //console.log('catslug', categorySlug)
+    console.log('totalposts', totalPosts.value)
     loaded.value = true;
-    window.scrollTo(0, 0);
-});
+
+})
 
 </script>
 
-<style scoped>
-.hero-section {
-    position: relative;
-    height: 70vh;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    overflow: hidden;
-}
 
-.banner-img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-}
-
-.banner-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.hero-content {
-    z-index: 1;
-    background: rgba(0, 0, 0, 0.5);
-    /* Semi-transparent overlay */
-    /*padding: 20px;*/
-    border-radius: 10px;
-}
-
-.stats {
-    margin-top: 20px;
-}
-
-.stat-item {
-    background: rgba(255, 255, 255, 0.1);
-    padding: 15px 25px;
-    border-radius: 15px;
-    transition: transform 0.3s ease, background 0.3s ease;
-}
-
-.stat-item:hover {
-    transform: scale(1.1);
-    background: rgba(255, 255, 255, 0.2);
-}
-</style>
+<style lang="css" scoped></style>

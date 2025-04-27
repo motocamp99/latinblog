@@ -12,7 +12,9 @@
             <!-- Tags list -->
             <Badge v-for="tag in sortedTags" :key="tag.id" :variant="selectedTag === tag.id ? 'default' : 'primary'"
                 class="cursor-pointer transition-colors hover:opacity-80" @click="handleTagClick(tag.id)">
-                {{ tag.id }} ({{ tag.count }})
+                <NuxtLink :to="categorySlug ?`/category/${categorySlug}/${slugify(tag.id)}` : `/tags/${slugify(tag.id)}` ">
+                    {{ tag.id }} {{ tag.count ? `(${tag.count})` : '' }}
+                </NuxtLink>
             </Badge>
         </div>
     </div>
@@ -34,10 +36,14 @@ const props = defineProps({
         required: true,
         default: () => []
     },
+    /*
     isCategory: {
         type: Boolean,
         default: false
-    }
+    }*/
+   categorySlug:{
+    type: String
+   }
 })
 
 const emit = defineEmits(['tag-selected'])

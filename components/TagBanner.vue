@@ -22,9 +22,9 @@ defineProps({
 
         <!-- Text overlay centered on image -->
         <div class="text-overlay">
-            <h1 class="banner-title">{{ tag.id }}</h1>
+            <h1 class="banner-title">Tag: {{ tag.id }}</h1>
             <p v-if="tag.description" class="banner-description">
-                {{ tag.description }}
+                Category : {{ tag.description }}
             </p>
         </div>
     </div>
