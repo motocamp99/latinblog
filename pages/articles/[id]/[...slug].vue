@@ -91,6 +91,7 @@ const slug=route.params.slug? route.params.slug[0]: ''
 
 const processedHtml = ref('')
 const tocItems = ref([])
+const images= ref([])
 
 useHead({
     link: [
@@ -148,6 +149,9 @@ const fetchArticle=async(id)=>{
     if (!response.ok) throw new Error('Failed to fetch info data');
     const result = await response.json();
     article.value=result.data
+    if(result.data.category_images){
+        console.log('cat images',result.data.category_images )
+    }
     console.log('resulted article', result.data)
 
 }
