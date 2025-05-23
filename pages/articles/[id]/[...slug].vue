@@ -59,7 +59,15 @@
                     <div style="width: 60vw;">
                         <article v-html="processHtml(article.content)"  class="p-4" id="article-card" >
                         </article>
+
+                        <div v-if="articleImages">
+                            {{articleImages}}
+                            <ArticleImageGallery :images="articleImages" />
+                        </div>
                     </div>
+
+                    
+
                 </div>
             </div>
 
@@ -91,7 +99,7 @@ const slug=route.params.slug? route.params.slug[0]: ''
 
 const processedHtml = ref('')
 const tocItems = ref([])
-const images= ref([])
+const articleImages= ref([])
 
 useHead({
     link: [
@@ -149,10 +157,15 @@ const fetchArticle=async(id)=>{
     if (!response.ok) throw new Error('Failed to fetch info data');
     const result = await response.json();
     article.value=result.data
-    if(result.data.category_images){
-        console.log('cat images',result.data.category_images )
+    if(article.value.gallery_images){
+
+        articleImages.value=article.value.gallery_images.map(elem=>elem.directus_files_id)
+        console.log('cat images',articleImages.value )
+        console.log('raw', article.value.gallery_images )
     }
-    console.log('resulted article', result.data)
+
+    //console.log('resulted article', result.data)
+    //console.log('gallll', articleImages.value.map(elem=>elem.directus_files_id))
 
 }
 
