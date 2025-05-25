@@ -13,7 +13,7 @@
             <slot class="main-content" />
         </div>
 
-        <section style="width: 100vw;">
+        <section>
             <Footer />
         </section>
 

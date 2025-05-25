@@ -27,9 +27,9 @@ const isMobileMenuOpen = ref(false)
     <header
         class="fixed top-0 z-50 w-full backdrop-blur-md bg-background/80 supports-[backdrop-filter]:bg-background/60 border-b"
         id="header-nav">
-        <div class="container flex h-20 items-center justify-between px-4 md:px-16">
+        <div class="w-full flex h-20 items-center justify-between px-4 md:px-16">
             <!-- Logo -->
-            <NuxtLink to="/" class="flex items-center" style="margin-left: 2vw;">
+            <NuxtLink to="/" class="flex items-center" style="margin-left: 0; margin-right: 2vw;">
                 <img src="/logo.png" alt="Logo" class="h-8 w-auto" style="width: 100px; height: auto;" />
             </NuxtLink>
 
@@ -37,7 +37,7 @@ const isMobileMenuOpen = ref(false)
             <NavigationMenu id="desktop-menu" >
                 <NavigationMenuList>
                     <NavigationMenuItem>
-                        <NavigationMenuTrigger style="background: transparent;">Getting started</NavigationMenuTrigger>
+                        <NavigationMenuTrigger style="background: transparent;">Modelos</NavigationMenuTrigger>
                         <NavigationMenuContent>
                             <ul
                                 class="grid gap-3 p-2 md:w-[400px] lg:w-[500px] lg:grid-cols-[minmax(0,.75fr)_minmax(0,1fr)]">
@@ -47,7 +47,7 @@ const isMobileMenuOpen = ref(false)
                                             href="/">
                                             <img src="/logo.png" class="h-6 w-6">
                                             <div class="mb-2 mt-4 text-lg font-medium">
-                                                shadcn/ui
+                                                Todas las modelos
                                             </div>
                                             <p class="text-sm leading-tight text-muted-foreground">
                                                 Beautifully designed components built with Radix UI and
@@ -60,7 +60,7 @@ const isMobileMenuOpen = ref(false)
                                     <NavigationMenuLink as-child>
                                         <a href="/docs/introduction"
                                             class="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                                            <div class="text-sm font-medium leading-none">Introduction</div>
+                                            <div class="text-sm font-medium leading-none">Estrellas Porno Latinas</div>
                                             <p class="line-clamp-2 text-sm leading-snug text-muted-foreground">
                                                 Re-usable components built using Radix UI and Tailwind CSS.
                                             </p>
@@ -71,7 +71,7 @@ const isMobileMenuOpen = ref(false)
                                     <NavigationMenuLink as-child>
                                         <a href="/docs/installation"
                                             class="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                                            <div class="text-sm font-medium leading-none">Installation</div>
+                                            <div class="text-sm font-medium leading-none">Latinas Webcams</div>
                                             <p class="line-clamp-2 text-sm leading-snug text-muted-foreground">
                                                 How to install dependencies and structure your app.
                                             </p>
@@ -82,7 +82,7 @@ const isMobileMenuOpen = ref(false)
                                     <NavigationMenuLink as-child>
                                         <a href="/docs/typography"
                                             class="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
-                                            <div class="text-sm font-medium leading-none">Typography</div>
+                                            <div class="text-sm font-medium leading-none">Latinas Onlyfans</div>
                                             <p class="line-clamp-2 text-sm leading-snug text-muted-foreground">
                                                 Styles for headings, paragraphs, lists...etc
                                             </p>
@@ -93,9 +93,9 @@ const isMobileMenuOpen = ref(false)
                         </NavigationMenuContent>
                     </NavigationMenuItem>
                     <NavigationMenuItem>
-                        <NavigationMenuTrigger style="background: transparent;">Components</NavigationMenuTrigger>
+                        <NavigationMenuTrigger style="background: transparent;">Categorías</NavigationMenuTrigger>
                         <NavigationMenuContent>
-                            <ul class="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                            <ul class="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[500px]">
                                 <li v-for="component in components" :key="component.title">
                                     <NavigationMenuLink as-child>
                                         <a :href="component.href"
@@ -114,9 +114,24 @@ const isMobileMenuOpen = ref(false)
                     <NavigationMenuItem style="background: transparent;">
                         <NavigationMenuLink style="background: transparent;" href="/docs/introduction"
                             :class="navigationMenuTriggerStyle()">
-                            Documentation
+                            Base de Datos
                         </NavigationMenuLink>
                     </NavigationMenuItem>
+
+                    <NavigationMenuItem style="background: transparent;">
+                        <NavigationMenuLink style="background: transparent;" href="/docs/introduction"
+                            :class="navigationMenuTriggerStyle()">
+                            Contacto
+                        </NavigationMenuLink>
+                    </NavigationMenuItem>
+
+                    <NavigationMenuItem style="background: transparent;">
+                        <NavigationMenuLink style="background: transparent;" href="/docs/introduction"
+                            :class="navigationMenuTriggerStyle()">
+                            Panties
+                        </NavigationMenuLink>
+                    </NavigationMenuItem>
+
                 </NavigationMenuList>
             </NavigationMenu>
 
@@ -138,7 +153,7 @@ const isMobileMenuOpen = ref(false)
                     Documentation
                 </NuxtLink>
                 <div class="px-4 py-2">
-                    <div class="font-medium mb-2">Getting started</div>
+                    <div class="font-medium mb-2">Etiquetas</div>
                     <div class="flex flex-col space-y-2 pl-4">
                         <NuxtLink to="/docs/introduction" class="hover:bg-accent rounded-md px-2 py-1">
                             Introduction
@@ -152,7 +167,7 @@ const isMobileMenuOpen = ref(false)
                     </div>
                 </div>
                 <div class="px-4 py-2">
-                    <div class="font-medium mb-2">Components</div>
+                    <div class="font-medium mb-2">Etiquetas</div>
                     <div class="flex flex-col space-y-2 pl-4">
                         <NuxtLink v-for="component in components" :key="component.title" :to="component.href"
                             class="hover:bg-accent rounded-md px-2 py-1">

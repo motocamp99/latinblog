@@ -1,7 +1,10 @@
 <template>
     <div class="px-4 sm:px-2 lg:px-8">
 
+        <!--
         <div v-if="loaded">
+            
+
 
             <div class="mb-12">
                 
@@ -38,7 +41,7 @@
                                     </li>
                                 </ul>
 
-                                <!--<SocialMediaLinks v-if="socialLinks" :socialLinks="socialLinks" class="mt-4" />-->
+                            
                             </div>
                         </div>
                     </Card>
@@ -82,6 +85,7 @@
             </svg>
             <span class="sr-only">Cargando...</span>
         </div>
+        -->
     </div>
 </template>
 
@@ -156,6 +160,10 @@ const fetchArticle=async(id)=>{
     );
     if (!response.ok) throw new Error('Failed to fetch info data');
     const result = await response.json();
+
+    console.log('resulted article', result.data)
+
+    /*
     article.value=result.data
     if(article.value.gallery_images){
 
@@ -166,6 +174,9 @@ const fetchArticle=async(id)=>{
 
     //console.log('resulted article', result.data)
     //console.log('gallll', articleImages.value.map(elem=>elem.directus_files_id))
+    */
+
+
 
 }
 

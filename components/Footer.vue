@@ -1,7 +1,7 @@
 <template>
     <footer class="bg-secondary">
 
-        <div class="w-full mx-2 px-4 py-16 sm:px-6 lg:px-8">
+        <div class="w-full px-4 mt-6 py-16 sm:px-6 lg:px-8">
             <div class="">
                 <div class="text-teal-600">
                     <NuxtLink to="/" class="flex items-center">
