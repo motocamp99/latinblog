@@ -26,6 +26,9 @@ const props = defineProps({
     },img_width:{
         type: Number,
         default:500
+    }, minimal:{
+        type:Boolean,
+        default : false
     }
 })
 
@@ -38,10 +41,11 @@ const formatDate = (dateString) => {
 </script>
 
 <template>
+    <!---->
 
     <Card class="overflow-hidden h-full flex flex-col hover:shadow-lg transition-shadow duration-300">
 
-        <NuxtLink :to="`/articles/${article.id}/${article.slug? article.slug : slugify(article.title)}`">
+        <NuxtLink :to="`/posts/${article.id}/${article.slug? article.slug : slugify(article.title)}`">
             <div class="overflow-hidden" :style="`height: ${img_height}`"> 
                 <NuxtImg
                     :src="article.image?.id ? `${article.image.id}` : '2df8b198-befd-4aa5-87cb-49f7da84b604'"
@@ -51,10 +55,10 @@ const formatDate = (dateString) => {
 
 
         <CardHeader class="flex-grow">
-            <div class="flex items-center gap-2 mb-2">
-                <NuxtLink v-if="article.category" :to="`/category/${slugify(article.category.name)}`">
+            <div class="flex items-center gap-2 mb-2" v-if="!minimal">
+                <NuxtLink v-if="article.category" :to="`/category/${slugify(article.category.id)}`">
                     <span class="text-xs font-medium px-2 py-1 bg-primary text-primary-foreground rounded-full">
-                        {{article.category.name}}
+                        {{ deslugify(article.category.id) }}
                     </span>
                 </NuxtLink>
                 <span class="text-xs text-muted-foreground">
@@ -62,14 +66,13 @@ const formatDate = (dateString) => {
                 </span>
             </div>
             <CardTitle class="text-lg line-clamp-2">{{ article.title }}</CardTitle>
-            <CardDescription class="line-clamp-3">{{ article.description }}</CardDescription>
+            <CardDescription v-if="!minimal" class="line-clamp-3">{{ article.description }}</CardDescription>
         </CardHeader>
 
         
 
-        <CardContent class="pt-0">
+        <CardContent class="pt-0" v-if="!minimal">
             <ArticleTagsComponent :tags="article.tags || []" />
-
         </CardContent>
        
 

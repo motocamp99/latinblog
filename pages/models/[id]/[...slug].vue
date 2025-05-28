@@ -4,9 +4,10 @@
 
         <div v-if="loaded">
             <div v-if="model.status === 'published'">
+                
                 <ModelDetails :model="model" :loaded="loaded" />
-
-                <!-- Tabs Navigation -->
+              
+    
                 <div class="border-b border-gray-200">
                     <nav class="flex space-x-8 px-6 gap-2">
                         <button v-for="tab in tabs" :key="tab.id" @click="activeTab = tab.id" :class="[
@@ -19,13 +20,13 @@
                         </button>
                     </nav>
                 </div>
-
-                <!-- Tab Panels -->
+                
+               
                 <div class="p-6">
                     <div v-show="activeTab === 'images'">
                         <ModelImages :images="images" />
                     </div>
-
+                     
                     <div v-show="activeTab === 'galleries'">
                         <GalleriesGrid :galleries="galleries" />
                     </div>
@@ -35,18 +36,9 @@
                             <p>Compilations coming soon</p>
                         </div>
                     </div>
+            
                 </div>
-
-                <!--
-                <ModelDetails :model="model" :loaded="loaded" />
-                <div class="p-6">
-                    <GalleriesGrid :galleries="galleries" />
-                </div>
-
-                <div class="p-6">
-                    <ModelImages :images="images" />
-                </div>
-                -->
+               
             </div>
 
             <div v-else>
@@ -115,7 +107,7 @@ const fetchModel = async (id) => {
 
 const fetchGalleries = async (id) => {
 
-    const url = `https://latin.dedyn.io/items/galleries/?fields=name,id,tags.tags_id,image.*&filter[model][id][_eq]=${id}`
+    const url = `https://latin.dedyn.io/items/galleries/?fields=name,id,tags.*,image.*&filter[model][id][_eq]=${id}`
 
     const response = await fetch(
 
@@ -138,7 +130,7 @@ const fetchGalleries = async (id) => {
 
 const fetchImages = async (id) => {
 
-    const url = `https://latin.dedyn.io/items/images?fields=url,fallback_url,status,alt,gallery.id,gallery.name,tags.tags_id&filter[model][id][_eq]=${id}`
+    const url = `https://latin.dedyn.io/items/images?fields=url,fallback_url,status,alt,gallery.id,gallery.name,tags.*&filter[model][id][_eq]=${id}`
     //const url=`https://latin.dedyn.io/items/images?fields=*.*&filter[model][id][_eq]=${id}`
 
     const response = await fetch(

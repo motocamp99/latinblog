@@ -5,13 +5,16 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 const props = defineProps({
     categories: {
         type: Array as PropType<Array<{
-            category: string
-            category_image: string
+            id: string
+            banner_image: string
             alt: string
             count?: number
         }>>,
         required: true,
         default: () => []
+    },isModel:{
+        type:Boolean,
+        default: false
     }
 })
 </script>
@@ -20,20 +23,21 @@ const props = defineProps({
     <div>
         <Carousel class="relative w-full" :opts="{ align: 'start' }">
             <CarouselContent>
-                <CarouselItem v-for="category in categories" :key="category.slug ? category.slug : slugify(category.name)"
+                <CarouselItem v-for="category in categories" :key="slugify(category.id)"
                     class="sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5">
                     <div class="p-1">
-                        <NuxtLink :to="category.slug ? `/category/${category.slug}` : `/category/${slugify(category.name)}`  ">
+                        <NuxtLink :to="`${isModel ? 'models' : 'posts'}/category/${slugify(category.id)}`">
                             <Card class="h-full transition-all hover:shadow-lg">
                                 <CardContent class="flex flex-col items-center p-0 aspect-[4/3]">
-                                    
-                                    <NuxtImg :src="`${category.category_image.filename_disk}`" :alt="category.alt"
+                                  <!--{{category}}-->  
+                                    <!--{{ isModel }}-->
+                                    <NuxtImg :src="category.banner_image?.id ? `${category.banner_image.id}` : `649ba7ca-4874-4dde-a18b-d4026a94265e` " :alt="category.alt"
                                         class="w-full h-full object-cover rounded-t-lg" loading="lazy" width=300 quality=70
                                         :modifiers="{ fit: 'cover'}" provider="directus"/>
                                    
 
                                     <div class="p-4 w-full text-center">
-                                        <h3 class="text-lg font-semibold capitalize">{{ category.name }}</h3>
+                                        <h3 class="text-lg font-semibold capitalize">{{ deslugify(category.id) }}</h3>
                                         <p v-if="category.count" class="text-sm text-gray-500">
                                             {{ category.count }} artículo{{ category.count !== 1 ? 's' : '' }}
                                         </p>

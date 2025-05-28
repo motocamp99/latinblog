@@ -1,8 +1,8 @@
 <template>
     <div class="flex flex-wrap gap-2">
-        <Badge v-for="tag in tags" :key="tag.tags_id" :variant="'secondary'" >
-            <NuxtLink :to="`/tags/${slugify(tag.tags_id)}`" class="text-current">
-                {{ tag.tags_id }}
+        <Badge v-for="tag in tags" :key="tag.post_tags_id" :variant="'secondary'" >
+            <NuxtLink :to="`/tags/${slugify(tag.post_tags_id)}`" class="text-current">
+                {{ deslugify(tag.post_tags_id) }}
             </NuxtLink>
         </Badge>
     </div>

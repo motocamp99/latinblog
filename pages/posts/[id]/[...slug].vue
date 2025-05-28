@@ -1,6 +1,13 @@
 <template>
     <div class="px-4 sm:px-2 lg:px-8">
 
+        {{ article }}
+
+        <NuxtImg
+            :src="article.image?.id ? article.image?.id :  `649ba7ca-4874-4dde-a18b-d4026a94265e`"
+            :alt="article.id" class="w-full h-full object-cover rounded-t-lg" loading="lazy" width=300 quality=70
+            :modifiers="{ fit: 'cover' }" provider="directus" />
+
         <!--
         <div v-if="loaded">
             
@@ -98,12 +105,12 @@ let article = ref({})
 const loaded = ref(false)
 const route = useRoute()
 //const { id, slug } = route.params
-const id=route.params.id
-const slug=route.params.slug? route.params.slug[0]: ''
+const id = route.params.id
+const slug = route.params.slug ? route.params.slug[0] : ''
 
 const processedHtml = ref('')
 const tocItems = ref([])
-const articleImages= ref([])
+const articleImages = ref([])
 
 useHead({
     link: [
@@ -119,20 +126,20 @@ useHead({
 
 
 const processHtml = (html) => {
-  const parser = new DOMParser()
-  const doc = parser.parseFromString(html, 'text/html')
-  const headings = doc.querySelectorAll('h2')
-  console.log('headings')
+    const parser = new DOMParser()
+    const doc = parser.parseFromString(html, 'text/html')
+    const headings = doc.querySelectorAll('h2')
+    console.log('headings')
 
-  tocItems.value = Array.from(headings).map((heading, index) => {
-    const id = heading.textContent 
-      ? slugify(heading.textContent) 
-      : `section-${index}` // Fallback if empty heading
-    heading.id = id
-    return { id, text: heading.textContent || '' }
-  })
+    tocItems.value = Array.from(headings).map((heading, index) => {
+        const id = heading.textContent
+            ? slugify(heading.textContent)
+            : `section-${index}` // Fallback if empty heading
+        heading.id = id
+        return { id, text: heading.textContent || '' }
+    })
 
-  return doc.body.innerHTML
+    return doc.body.innerHTML
 }
 
 
@@ -146,11 +153,33 @@ const formatDate = (dateString) => {
 }
 
 
-const fetchArticle=async(id)=>{
+const fetchArticles = async () => {
 
     const response = await fetch(
-    
-      `https://latin.dedyn.io/items/posts/${id}?fields=*.*`,
+
+        `https://latin.dedyn.io/items/posts?fields=*.*`,
+        {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        }
+    );
+    if (!response.ok) throw new Error('Failed to fetch info data');
+    const result = await response.json();
+
+    console.log('resulted articles', result.data)
+
+
+}
+
+
+
+const fetchArticle = async (id) => {
+
+    const response = await fetch(
+
+        `https://latin.dedyn.io/items/posts/${id}?fields=*.*`,
         {
             method: 'GET',
             headers: {
@@ -162,6 +191,7 @@ const fetchArticle=async(id)=>{
     const result = await response.json();
 
     console.log('resulted article', result.data)
+    article.value = result.data
 
     /*
     article.value=result.data
@@ -194,6 +224,7 @@ const socialLinks = computed(() => ({
 onMounted(async () => {
 
     await fetchArticle(id)
+    await fetchArticles()
 
     /*
 
@@ -211,7 +242,7 @@ onMounted(async () => {
     })
 
     */
-    
+
     loaded.value = true
 })
 
@@ -234,13 +265,13 @@ onMounted(async () => {
     line-height: 1.7;
 }
 
-#article-card h1{
+#article-card h1 {
     font-size: 3rem;
     color: rgb(81, 81, 81);
     font-weight: bold;
 }
 
-#article-card h2{
+#article-card h2 {
     font-size: 2rem;
     color: rgb(81, 81, 81);
     font-weight: bold;
