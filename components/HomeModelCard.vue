@@ -50,10 +50,10 @@ const formatDate = (dateString: string) => {
 </script>
 
 <template>
-    <Card class="overflow-hidden h-full flex flex-col hover:shadow-lg transition-shadow duration-300 w-12/12 ">
+    <Card class="overflow-hidden h-full flex flex-col hover:shadow-lg transition-shadow duration-300">
     
         <NuxtLink :to="`/models/${model.id}/${model.slug || slugify(model.name)}`">
-            <div class="overflow-hidden h-96 md:h-auto "  > <!--:style="`height: ${img_height}`"-->
+            <div class="overflow-hidden h-96 md:h-48 "  > <!--:style="`height: ${img_height}`"-->
                 <NuxtImg :src="model.image?.id ? `${model.image.id}` : '2df8b198-befd-4aa5-87cb-49f7da84b604'"
                     quality="70" :width="img_width" provider="directus" loading="lazy"
                     class="w-full h-full object-cover object-top"/>

@@ -6,14 +6,14 @@
             <div style="max-height: 60vh; overflow-y: hidden !important;">
                 <NuxtImg provider="directus" :src="image.image" />
             </div>-->
-            <div style="max-height: 60vh; overflow-y: hidden !important;" >
+            <div class="h-[50vh] md:h-[50vh] lg:h-[50vh] xl:h-[75vh]" style="overflow-y: hidden !important;" >
                 <NuxtImg :src="image.image" :alt="image.title" class="w-full h-full object-cover" loading="eager"
                     provider="directus" />
                 <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-8">
                     <div class="text-white">
                         <h1 class="sm:text-7xl md:text-5xl font-bold mb-2">{{ image.title && image.title.length > 50 ?
                             `${image.title.slice(0,
-                            50)}...` : title}}</h1>
+                            50)}...` : image.title}}   </h1>
                         <p v-if="image.subtitle" id="subtitle" class="sm:text-sm md:text-xl opacity-90 lg:mb-14">{{ image.subtitle
                             }}
                         </p>

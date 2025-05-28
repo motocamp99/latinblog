@@ -8,22 +8,34 @@
 
       <section>
 
-         <section class="flex my-12">
-            <div class="w-7/12 p-0 h-[600px] flex flex-col justify-center items-start">
+         <section class="flex flex-col md:flex-row lg:flex-row my-12">
+            <div class="w-full md:w-7/12 p-0 flex flex-col justify-center items-start ">
                <h2 class="text-4xl font-bold mb-4 ms-4">Models</h2>
                <CarouselSplide :images="modelBanners" />
             </div>
-            <div class="w-5/12 my-6">
+            <div class="w-full md:w-5/12 my-12 md:my-6">
                <VerticalCarousel :items="modelsArr" :isModel="true" />
             </div>
          </section>
 
          <section>
             <div class="mb-8 px-6">
-               <h2 class="text-2xl font-bold mb-4" >Model Tags</h2>
+               <h2 class="text-2xl font-bold mb-4">Model Tags</h2>
                <Tags :tags="modelTags" />
             </div>
          </section>
+
+         <section class="flex flex-col md:flex-row lg:flex-row my-12">
+            <div class="w-full md:w-5/12 p-0 flex flex-col justify-center items-start ">
+               <VerticalCarousel :items="postsArr"/>
+            </div>
+            <div class="w-full md:w-7/12 my-12 md:my-6">
+               <h2 class="text-4xl font-bold mb-4 ms-4">Magazine</h2>
+               <CarouselSplide :images="magazineBanners" />
+            </div>
+         </section>
+
+         <!--
 
          <section class="flex my-12">
 
@@ -35,10 +47,11 @@
                <CarouselSplide :images="magazineBanners" />
             </div>
          </section>
+         -->
 
          <section>
             <div class="mb-8 px-6">
-               <h2 class="text-2xl font-bold mb-4" >Post Tags</h2>
+               <h2 class="text-2xl font-bold mb-4">Post Tags</h2>
                <Tags :tags="modelTags" />
             </div>
          </section>
@@ -103,11 +116,11 @@ const fetchBanners = async () => {
       if (!response.ok) throw new Error('Failed to fetch info data');
       const result = await response.json();
 
-      const modelBanners_= result.data.filter(elem=>elem.page==="models")
-      const postBanners_= result.data.filter(elem=>elem.page==="magazine")
+      const modelBanners_ = result.data.filter(elem => elem.page === "models")
+      const postBanners_ = result.data.filter(elem => elem.page === "magazine")
 
-      modelBanners.value=modelBanners_
-      magazineBanners.value=postBanners_
+      modelBanners.value = modelBanners_
+      magazineBanners.value = postBanners_
 
       console.log('resulted model banners', modelBanners)
       console.log('resulted post banners', postBanners)
@@ -213,24 +226,24 @@ const fetchPostTags = async () => {
 }
 
 const fetchModelTags = async () => {
-    try {
-        const response = await fetch(
-            'https://latin.dedyn.io/items/model_tags?fields=*.*' 
-            ,
-            {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            }
-        );
-        if (!response.ok) throw new Error('Failed to fetch info data');
-        const result = await response.json();
-        modelTags.value = result.data
+   try {
+      const response = await fetch(
+         'https://latin.dedyn.io/items/model_tags?fields=*.*'
+         ,
+         {
+            method: 'GET',
+            headers: {
+               'Content-Type': 'application/json',
+            },
+         }
+      );
+      if (!response.ok) throw new Error('Failed to fetch info data');
+      const result = await response.json();
+      modelTags.value = result.data
 
-    } catch (error) {
-        console.error('error with tags' , error)
-    }
+   } catch (error) {
+      console.error('error with tags', error)
+   }
 }
 
 
