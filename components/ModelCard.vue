@@ -30,9 +30,9 @@ const props = defineProps({
     img_width: {
         type: Number,
         default: 500
-    }, minimal:{
-        type:Boolean,
-        default : false
+    }, minimal: {
+        type: Boolean,
+        default: false
     }
 })
 
@@ -51,22 +51,24 @@ const formatDate = (dateString: string) => {
 
 <template>
     <Card class="overflow-hidden h-full flex flex-col hover:shadow-lg transition-shadow duration-300 w-12/12 ">
-    
+
         <NuxtLink :to="`/models/${model.id}/${model.slug || slugify(model.name)}`">
-            <div class="overflow-hidden h-96 md:h-auto "  > <!--:style="`height: ${img_height}`"-->
+            <div class="overflow-hidden h-96 md:h-96"> <!--:style="`height: ${img_height}`"-->
                 <NuxtImg :src="model.image?.id ? `${model.image.id}` : '2df8b198-befd-4aa5-87cb-49f7da84b604'"
                     quality="70" :width="img_width" provider="directus" loading="lazy"
-                    class="w-full h-full object-cover object-top"/>
+                    class="w-full h-full object-cover object-top" />
             </div>
         </NuxtLink>
 
-        <CardHeader class="flex-grow">
+        <CardHeader class="flex-grow p-3 md:p-6">
             <div class="flex items-center gap-2 mb-2" v-if="!minimal">
                 <NuxtLink v-if="model.category" :to="`/category/${slugify(model.category.id)}`">
                     <span class="text-xs font-medium px-2 py-1 bg-primary text-primary-foreground rounded-full">
                         {{ deslugify(model.category.id) }}
                     </span>
                 </NuxtLink>
+            </div>
+            <div>
                 <span v-if="model.age" class="text-xs text-muted-foreground">
                     {{ calculateAge(model.age) }} años
                 </span>
@@ -80,11 +82,12 @@ const formatDate = (dateString: string) => {
 
         <CardContent class="pt-0" v-if="!minimal">
             <div class="flex flex-wrap gap-1">
-                
-                <span v-for="tag in model.tags" :key="tag.model_tags_id" class="text-xs px-2 py-1 bg-muted rounded-full">
+
+                <span v-for="tag in model.tags" :key="tag.model_tags_id"
+                    class="text-xs px-2 py-1 bg-muted rounded-full">
                     {{ tag.model_tags_id }}
                 </span>
-               
+
             </div>
         </CardContent>
 
@@ -94,7 +97,7 @@ const formatDate = (dateString: string) => {
                 Ver más →
             </NuxtLink>
         </CardFooter>
-        
+
     </Card>
 </template>
 

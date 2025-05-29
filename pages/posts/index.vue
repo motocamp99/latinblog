@@ -1,12 +1,11 @@
 <template>
     <div v-if="loaded">
          
-        <section class="mb-12 px-4 lg:px-24 mt-12" v-if="bannerImages">
-            <SimpleHero :images="bannerImages" />
+       <section class="mb-3 md:mb-12 px-4 lg:px-24 mt-12" v-if="postBanners">
+            <CarouselSplide :images="postBanners" />
         </section>
-       
 
-        <section class="mb-12 px-4 lg:px-24 mt-12">
+        <section class="mb-3 md:mb-12 px-4 lg:px-24 mt-12">
             <h2 class="text-2xl font-bold mb-6">Artículos Sugeridos</h2>
            <FeaturedCarousel :items="featuredPosts" />
 
@@ -14,13 +13,12 @@
         </section>
 
        
-
-        <section class="mb-12 px-4 lg:px-24">
+        <section class="mb-3 md:mb-12 px-4 lg:px-24">
             <h4 class="text-2xl font-semibold capitalize">Categorías</h4>
             <CategoryCarousel :categories="categories" />
         </section>
           
-        <section class="mb-12 lg:px-14">
+        <section class="mb-3 md:mb-12 lg:px-14">
             <CategoriesCarousel :categoryArticlesArray="categoryArticles" />
         </section>
        
@@ -101,7 +99,7 @@ import { ref, onMounted } from 'vue';
 
 const allArticles = ref([]);
 const loaded = ref(false);
-const bannerImages = ref([])
+const postBanners= ref([])
 const categoryArticles = ref([]);
 const tags = ref([]);
 const categories = ref([]);
@@ -114,41 +112,32 @@ const totalPosts = ref(0);
 
 const fetchBanners = async () => {
 
-try {
+    try {
+        const url = 'https://latin.dedyn.io/items/banners'
+        const response = await fetch(
 
-    //const url='https://latin.dedyn.io/files?filter[folder][_eq]=42677c73-d85f-4bd8-8308-23ab200e221e'
-    const url='https://latin.dedyn.io/files?filter[folder][_eq]=5c74b321-0791-4e71-9a68-4914958dd8a8'
+            url,
+            {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            }
+        );
+        if (!response.ok) throw new Error('Failed to fetch info data');
+        const result = await response.json();
 
-    const response = await fetch(
+        const postBanners_ = result.data.filter(elem => elem.page === "magazine")
+        postBanners.value = postBanners_
+        console.log('resulted model banners', postBanners)
 
-        url, //working
-        {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                /*'Authorization': `Bearer ${token}`*/
-            },
-        }
-    );
-    if (!response.ok) throw new Error('Failed to fetch info data');
-    const result = await response.json();
-    let processed=result.data.map(elem=>{
-        return {
-            src:`${elem.id}`,
-            alt:null,
-            title:null
-        }
-    })
-    
-    //bannerImages.value=result.data
-    console.log('resulted banners', processed)
-    bannerImages.value=processed
 
-} catch (error) {
-    console.error('Error fetching categories:');
-}
+    } catch (error) {
+        console.error('Error fetching banners:', error);
+    }
 
 }
+
 
 
 const fetchCategories = async () => {

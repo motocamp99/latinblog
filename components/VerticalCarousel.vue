@@ -1,25 +1,27 @@
 
-<template>
-    <Carousel orientation="vertical" class="relative w-full py-6 h-[50vh] md:h-[50vh] lg:h-[50vh] xl:h-[75vh]" :opts="{
-        align: 'start',
-    }">
-        <CarouselContent v-if="isModel" class="-mt-1 h-[55vh] md:h-[50vh] lg:h-[50vh] xl:h-[75vh]"> <!--h-[50vh] md:h-[50vh] lg:h-[50vh] xl:h-[75vh]-->
+<template >
+    <Carousel orientation="vertical" class="w-full h-[60vh] md:h-[50vh] lg:h-[50vh] xl:h-[75vh]" :opts="{align: 'start',}">
+        <CarouselContent v-if="isModel" class="mt-1 h-[60vh] md:h-[50vh] lg:h-[50vh] xl:h-[75vh]"> <!--h-[50vh] md:h-[50vh] lg:h-[50vh] xl:h-[75vh]-->
 
             <CarouselItem  v-for="obj in props.items" :key="obj.category" class="p-1 md:basis-1/2">
                 <div class="p-1">
-                     <h5 class="font-semibold capitalize ms-6"> {{ deslugify(obj.category) }}  </h5>
-                    <FeaturedCarouselHome :items="obj.models" :isModel="true" :minimal="true" />
+                     <h5 class="font-semibold capitalize ms-12"> {{ deslugify(obj.category) }}  </h5>
+                    <FeaturedCarouselHome :items="obj.models" :isModel="true" :minimal="true" :smallWidth="props.smallWidth"
+                     :mediumWidth="props.mediumWidth" :largeWidth="props.largeWidth" :itemsSm="props.itemsSm" :itemsMd="props.itemsMd" 
+                     :itemsLg="props.itemsLg" :itemsXl="props.itemsXl"/>
                 </div>
             </CarouselItem>
 
         </CarouselContent>
 
-        <CarouselContent v-else class="-mt-1 h-[50vh] md:h-[50vh] lg:h-[50vh] xl:h-[75vh]">
+        <CarouselContent v-else class="mt-1 h-[60vh] md:h-[50vh] lg:h-[50vh] xl:h-[75vh]">
 
-            <CarouselItem  v-for="obj in props.items" :key="obj.category" class="p-1 md:basis-1/2">
+            <CarouselItem  v-for="obj in props.items" :key="obj.category" class="p-1 basis-1/2">
                 <div class="p-1">
-                     <h5 class="font-semibold capitalize ms-6"> {{ deslugify(obj.category) }}  </h5>
-                    <FeaturedCarouselHome :items="obj.posts" :minimal="true" />
+                     <h5 class="font-semibold capitalize ms-12"> {{ deslugify(obj.category) }}  </h5>
+                    <FeaturedCarouselHome :items="obj.posts" :minimal="true" :smallWidth="props.smallWidth"
+                     :mediumWidth="props.mediumWidth" :largeWidth="props.largeWidth" :itemsSm="props.itemsSm" :itemsMd="props.itemsMd" 
+                     :itemsLg="props.itemsLg" :itemsXl="props.itemsXl"/>
                 </div>
             </CarouselItem>
 
@@ -48,6 +50,42 @@ const props = defineProps({
     },isModel :{
         type:Boolean,
         default:false
+    },
+    smallWidth: {
+        type: Number,
+        default: 3,
+        validator: (value: number) => value >= 1 && value <= 12
+    },
+    mediumWidth: {
+        type: Number,
+        default: 5,
+        validator: (value: number) => value >= 1 && value <= 12
+    },
+    largeWidth: {
+        type: Number,
+        default: 5,
+        validator: (value: number) => value >= 1 && value <= 12
+    },
+    // Items per view props
+    itemsSm: {
+        type: Number,
+        default: 2,
+        validator: (value: number) => value >= 1 && value <= 6
+    },
+    itemsMd: {
+        type: Number,
+        default: 2,
+        validator: (value: number) => value >= 1 && value <= 6
+    },
+    itemsLg: {
+        type: Number,
+        default: 4,
+        validator: (value: number) => value >= 1 && value <= 6
+    },
+    itemsXl: {
+        type: Number,
+        default: 4,
+        validator: (value: number) => value >= 1 && value <= 6
     }
 })
 

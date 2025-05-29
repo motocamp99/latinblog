@@ -6,12 +6,8 @@
             '--large-width': `${(largeWidth / 12) * 100}%`
         }">
             <CarouselContent>
-                <CarouselItem 
-                    v-for="item in items" 
-                    :key="item.id"
-                    class="carousel-item"
-                    :style="itemSizeStyles"
-                >
+                <CarouselItem v-for="item in items" :key="item.id"
+                    class="basis-1/2 md:basis-1/2 lg:basis-1/2 xl:basis-1/5">
                     <div class="p-1">
                         <ModelCard v-if="isModel" :model="item" :img_width="600" :img_height="img_height"
                             :minimal="minimal" />
@@ -27,7 +23,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { Card, CardContent } from '@/components/ui/card'
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
 import ArticleCard from './ArticleCard.vue'
@@ -55,52 +50,19 @@ const props = defineProps({
         type: Boolean,
         default: false
     },
-    // Container width props
     smallWidth: {
         type: Number,
-        default: 12,
-        validator: (value: number) => value >= 1 && value <= 12
+        default: 12
     },
     mediumWidth: {
         type: Number,
-        default: 10,
-        validator: (value: number) => value >= 1 && value <= 12
+        default: 10
     },
     largeWidth: {
         type: Number,
-        default: 8,
-        validator: (value: number) => value >= 1 && value <= 12
-    },
-    // Items per view props
-    itemsSm: {
-        type: Number,
-        default: 2,
-        validator: (value: number) => value >= 1 && value <= 6
-    },
-    itemsMd: {
-        type: Number,
-        default: 2,
-        validator: (value: number) => value >= 1 && value <= 6
-    },
-    itemsLg: {
-        type: Number,
-        default: 4,
-        validator: (value: number) => value >= 1 && value <= 6
-    },
-    itemsXl: {
-        type: Number,
-        default: 4,
-        validator: (value: number) => value >= 1 && value <= 6
+        default: 8
     }
 })
-
-// Generate dynamic basis styles based on items per view props
-const itemSizeStyles = computed(() => ({
-    '--basis-sm': `${100/props.itemsSm}%`,
-    '--basis-md': `${100/props.itemsMd}%`,
-    '--basis-lg': `${100/props.itemsLg}%`,
-    '--basis-xl': `${100/props.itemsXl}%`
-}))
 </script>
 
 <style scoped>
@@ -119,29 +81,6 @@ const itemSizeStyles = computed(() => ({
 @media (min-width: 1024px) {
     .carousel-container {
         width: var(--large-width);
-    }
-}
-
-.carousel-item {
-    flex: 0 0 var(--basis-sm);
-    padding: 0.25rem; /* equivalent to p-1 */
-}
-
-@media (min-width: 768px) {
-    .carousel-item {
-        flex-basis: var(--basis-md);
-    }
-}
-
-@media (min-width: 1024px) {
-    .carousel-item {
-        flex-basis: var(--basis-lg);
-    }
-}
-
-@media (min-width: 1280px) {
-    .carousel-item {
-        flex-basis: var(--basis-xl);
     }
 }
 </style>

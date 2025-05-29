@@ -6,12 +6,9 @@
             '--large-width': `${(largeWidth / 12) * 100}%`
         }">
             <CarouselContent>
-                <CarouselItem 
-                    v-for="item in items" 
-                    :key="item.id"
-                    class="carousel-item"
-                    :style="itemSizeStyles"
-                >
+                <CarouselItem v-for="item in items" :key="item.id"
+                    :class="itemSizeClasses">
+                    items xl {{ props.itemsXl }}
                     <div class="p-1">
                         <ModelCard v-if="isModel" :model="item" :img_width="600" :img_height="img_height"
                             :minimal="minimal" />
@@ -94,13 +91,13 @@ const props = defineProps({
     }
 })
 
-// Generate dynamic basis styles based on items per view props
-const itemSizeStyles = computed(() => ({
-    '--basis-sm': `${100/props.itemsSm}%`,
-    '--basis-md': `${100/props.itemsMd}%`,
-    '--basis-lg': `${100/props.itemsLg}%`,
-    '--basis-xl': `${100/props.itemsXl}%`
-}))
+// Generate dynamic basis classes based on items per view props
+const itemSizeClasses = computed(() => [
+    `basis-1/${props.itemsSm}`,
+    `md:basis-1/${props.itemsMd}`,
+    `lg:basis-1/${props.itemsLg}`,
+    `xl:basis-1/${props.itemsXl}`
+])
 </script>
 
 <style scoped>
@@ -119,29 +116,6 @@ const itemSizeStyles = computed(() => ({
 @media (min-width: 1024px) {
     .carousel-container {
         width: var(--large-width);
-    }
-}
-
-.carousel-item {
-    flex: 0 0 var(--basis-sm);
-    padding: 0.25rem; /* equivalent to p-1 */
-}
-
-@media (min-width: 768px) {
-    .carousel-item {
-        flex-basis: var(--basis-md);
-    }
-}
-
-@media (min-width: 1024px) {
-    .carousel-item {
-        flex-basis: var(--basis-lg);
-    }
-}
-
-@media (min-width: 1280px) {
-    .carousel-item {
-        flex-basis: var(--basis-xl);
     }
 }
 </style>

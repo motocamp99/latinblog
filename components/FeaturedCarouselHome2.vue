@@ -4,29 +4,13 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import ArticleCard from './ArticleCard.vue'
 import ModelCard from './ModelCard.vue'
 
+interface modelArr {
+    type: object[]
+}
+
 const props = defineProps({
-    items: {
-        type: Array as PropType<Array<{
-            id: string
-            title?: string
-            name?: string
-            description?: string
-            bio?: string
-            date_created?: string
-            image?: {
-                id: string
-            }
-            category?: {
-                id: string
-                name?: string
-            }
-            tags?: Array<{
-               post_tags_id: string
-               model_tags_id : string
-            }>
-            country?: string
-            age?: string
-        }>>,
+     items: {
+        type: Array as PropType<modelArr[]>,
         required: true,
         default: () => []
     },
@@ -36,31 +20,34 @@ const props = defineProps({
     },
     img_height: {
         type: String,
-        default: "40vh"
+        default: "15vh"
     }, minimal:{
         type:Boolean,
         default : false
+    },smallWidth:{
+        type: Number,
+        default: 12
+    },mediumWidth:{
+         type: Number,
+         default: 10
     }
 })
 </script>
 
 <template>
-    <div>
-        <Carousel class="relative w-full px-1 md:px-6" :opts="{ align: 'start' }">
+    <div > <!--class="flex justify-center"-->
+        <Carousel class="relative w-12/12 md:w-10/12 md:ms-12" :opts="{ align: 'start' }"> <!--here i want to set the width from props like w-smallWidth/12 md:w-mediumWidth/12 -->
             <CarouselContent>
                 <CarouselItem v-for="item in items" :key="item.id"
-                    class="sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/4">
+                    class="basis-1/2 md:basis-1/2 lg:basis-1/2 xl:basis-1/3">
                     <div class="p-1">
-                       
                        <ModelCard v-if="isModel" :model="item" :img_width="600" :img_height="img_height" :minimal="minimal"  /> 
                         <ArticleCard v-else :article="item" :img_width="600" :img_height="img_height" :minimal="minimal"  />
-                      
-                        <!--{{ item }} --> 
                     </div>
                 </CarouselItem>
             </CarouselContent>
-            <CarouselPrevious class="hidden sm:flex" />
-            <CarouselNext class="hidden sm:flex" />
+            <CarouselPrevious class="flex" />
+            <CarouselNext class="flex" />
         </Carousel>
     </div>
 </template>

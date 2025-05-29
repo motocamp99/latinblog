@@ -2,7 +2,7 @@
 import { Card, CardContent } from '@/components/ui/card'
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
 import ArticleCard from '@/components/ArticleCard.vue'
-
+/*
 const props = defineProps({
     categoryArticlesArray: {
         type: Array as PropType<Array<{
@@ -13,9 +13,16 @@ const props = defineProps({
         default: () => []
     }
 })
+    */
 </script>
 
 <template>
+
+<div>
+
+</div>
+
+    <!--
     <div>
         <div v-for="categoryGroup in categoryArticlesArray" :key="categoryGroup.category" class="mb-12">
             <div class="flex justify-between items-center mb-6 px-4">
@@ -41,5 +48,5 @@ const props = defineProps({
                 <CarouselNext class="hidden sm:flex" />
             </Carousel>
         </div>
-    </div>
+    </div>-->
 </template>

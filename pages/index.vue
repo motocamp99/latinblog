@@ -10,11 +10,11 @@
 
          <section class="flex flex-col md:flex-row lg:flex-row my-12">
             <div class="w-full md:w-7/12 p-0 flex flex-col justify-center items-start ">
-               <h2 class="text-4xl font-bold mb-4 ms-4">Models</h2>
+              <!-- <h2 class="text-4xl font-bold mb-4 ms-4">Models</h2>-->
                <CarouselSplide :images="modelBanners" />
             </div>
             <div class="w-full md:w-5/12 my-12 md:my-6">
-               <VerticalCarousel :items="modelsArr" :isModel="true" />
+               <VerticalCarousel :items="modelsArr" :isModel="true" :smallWidth=12 :mediumWidth=9 :largeWidth=10 :itemsXl=2 />
             </div>
          </section>
 
@@ -25,29 +25,15 @@
             </div>
          </section>
 
-         <section class="flex flex-col md:flex-row lg:flex-row my-12">
+         <section class="flex flex-col-reverse md:flex-row lg:flex-row my-12">
             <div class="w-full md:w-5/12 p-0 flex flex-col justify-center items-start ">
-               <VerticalCarousel :items="postsArr"/>
+               <VerticalCarousel :items="postsArr" :smallWidth=12 :mediumWidth=9 :largeWidth=10 :itemsXl=2 />
             </div>
             <div class="w-full md:w-7/12 my-12 md:my-6">
-               <h2 class="text-4xl font-bold mb-4 ms-4">Magazine</h2>
+              <!-- <h2 class="text-4xl font-bold mb-4 ms-4">Magazine</h2>-->
                <CarouselSplide :images="magazineBanners" />
             </div>
          </section>
-
-         <!--
-
-         <section class="flex my-12">
-
-            <div class="w-5/12 my-6">
-               <VerticalCarousel :items="postsArr" />
-            </div>
-            <div class="w-7/12 p-0 h-[600px] flex flex-col justify-center items-start">
-               <h2 class="text-4xl font-bold mb-4 txt-center">Magazine</h2>
-               <CarouselSplide :images="magazineBanners" />
-            </div>
-         </section>
-         -->
 
          <section>
             <div class="mb-8 px-6">

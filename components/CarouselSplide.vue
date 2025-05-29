@@ -7,7 +7,7 @@
                 <NuxtImg provider="directus" :src="image.image" />
             </div>-->
             <div class="h-[50vh] md:h-[50vh] lg:h-[50vh] xl:h-[75vh]" style="overflow-y: hidden !important;" >
-                <NuxtImg :src="image.image" :alt="image.title" class="w-full h-full object-cover" loading="eager"
+                <NuxtImg :src="image.image" :alt="image.title" class="w-full h-full object-cover object-top" loading="eager"
                     provider="directus" />
                 <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-8">
                     <div class="text-white">

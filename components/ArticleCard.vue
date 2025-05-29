@@ -54,7 +54,7 @@ const formatDate = (dateString) => {
         </NuxtLink>
 
 
-        <CardHeader class="flex-grow">
+        <CardHeader class="flex-grow p-3 md:p-6">
             <div class="flex items-center gap-2 mb-2" v-if="!minimal">
                 <NuxtLink v-if="article.category" :to="`/category/${slugify(article.category.id)}`">
                     <span class="text-xs font-medium px-2 py-1 bg-primary text-primary-foreground rounded-full">
@@ -65,7 +65,7 @@ const formatDate = (dateString) => {
                     {{ formatDate(article.date_created) }}
                 </span>
             </div>
-            <CardTitle class="text-lg line-clamp-2">{{ article.title }}</CardTitle>
+            <CardTitle class="text-sm md:text-base lg:text-base xl:text-base ">{{ article.title }}</CardTitle>
             <CardDescription v-if="!minimal" class="line-clamp-3">{{ article.description }}</CardDescription>
         </CardHeader>
 
@@ -76,7 +76,7 @@ const formatDate = (dateString) => {
         </CardContent>
        
 
-        <CardFooter class="pt-0">
+        <CardFooter class="pt-1 p-3 md:p-6" > <!--style="padding: 0 !important;"-->
             
             <NuxtLink :to="`/articles/${article.id}/${article.slug? article.slug : slugify(article.title)}`"
                 class="text-sm font-medium text-primary hover:underline">

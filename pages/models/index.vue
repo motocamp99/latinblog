@@ -1,30 +1,36 @@
 <template>
     <div v-if="loaded">
 
-        <section class="mb-12 px-4 lg:px-24 mt-12" v-if="bannerImages">
-            <SimpleHero :images="bannerImages" />
+        <section class="mb-3 md:mb-12 px-4 lg:px-24 mt-12" v-if="modelBanners">
+            <CarouselSplide :images="modelBanners" />
         </section>
-        
-        <section class="mb-12 px-4 lg:px-24 mt-12">
+
+        <section class="mb-3 md:mb-12 px-4 lg:px-24 mt-12">
             <h2 class="text-2xl font-bold mb-6">Featured Models</h2>
             <FeaturedCarousel :items="featuredModels" :isModel="true" img_height="40vh" />
         </section>
-        
 
-        <section class="mb-12 px-4 lg:px-24">
+
+        <section class="mb-3 md:mb-12 px-4 lg:px-24">
             <h4 class="text-2xl font-semibold capitalize">Categorías</h4>
             <CategoryCarousel :categories="categories" :isModel="true" />
         </section>
-       
+
+        
+         <div class="w-full flex justify-center mb-3 my-12 md:my-6 lg:px-11">
+            <VerticalCarousel :items="modelsArr" :isModel="true" :smallWidth=12 :mediumWidth=11 :largeWidth=11 :itemsXl="3" />
+        </div>
+        
+
         <section class="px-4 lg:px-24">
             <div v-if="allModels.length > 0">
 
-                 
+
                 <div class="mb-8">
                     <h2 class="text-2xl font-bold mb-4">Etiquetas</h2>
                     <Tags :tags="tags" @tag-selected="handleTagSelect" />
                 </div>
-                
+
 
                 <h2 class="text-2xl font-bold mb-6">Todos Los Artículos</h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -73,7 +79,7 @@
                 <p class="text-gray-500">No se encontraron artículos</p>
             </div>
         </section>
-        
+
 
     </div>
 
@@ -95,54 +101,48 @@
 import { ref, onMounted } from 'vue';
 
 const allModels = ref([])
-const bannerImages = ref([])
+const modelBanners = ref([])
 const loaded = ref(false)
 const totalModels = ref(0)
 const categories = ref([])
 const featuredModels = ref([])
-const tags= ref([])
+const tags = ref([])
+const modelsArr = ref([])
 
 const ITEMS_PER_PAGE = 5
 const currentPage = ref(1);
 const MAX_VISIBLE_PAGES = 5;
 
+
+
 const fetchBanners = async () => {
 
     try {
-
-        //const url='https://latin.dedyn.io/files?filter[folder][_eq]=42677c73-d85f-4bd8-8308-23ab200e221e'
-        const url = 'https://latin.dedyn.io/files?filter[folder][_eq]=fc588bef-fae5-4b3a-b5ea-9689ff78c2c0'
-
+        const url = 'https://latin.dedyn.io/items/banners'
         const response = await fetch(
 
-            url, //working
+            url,
             {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    /*'Authorization': `Bearer ${token}`*/
                 },
             }
         );
         if (!response.ok) throw new Error('Failed to fetch info data');
         const result = await response.json();
-        let processed = result.data.map(elem => {
-            return {
-                src: `${elem.id}`,
-                alt: null,
-                title: null
-            }
-        })
 
-        //bannerImages.value=result.data
-        console.log('resulted banners', processed)
-        bannerImages.value = processed
+        const modelBanners_ = result.data.filter(elem => elem.page === "models")
+        modelBanners.value = modelBanners_
+        console.log('resulted model banners', modelBanners)
+
 
     } catch (error) {
-        console.error('Error fetching categories:');
+        console.error('Error fetching banners:', error);
     }
 
 }
+
 
 const fetchCategories = async () => {
 
@@ -213,7 +213,7 @@ const fetchModels = async (page = 1) => {
 
         const result = await response.json();
         allModels.value = result.data;
-        //currentPage.value = page;
+        currentPage.value = page;
 
         console.log('total models value', allModels.value)
 
@@ -263,7 +263,7 @@ const fetchTags = async () => {
     try {
         const response = await fetch(
 
-            'https://latin.dedyn.io/items/model_tags?fields=*.*' 
+            'https://latin.dedyn.io/items/model_tags?fields=*.*'
             ,
             {
                 method: 'GET',
@@ -279,10 +279,45 @@ const fetchTags = async () => {
         console.log('all tags', tags.value)
 
     } catch (error) {
-        console.error('error with tags' , error)
+        console.error('error with tags', error)
     }
 
 }
+
+const organizeModelsByCategory = (models) => {
+   if (!models || models.length === 0) return [];
+
+   const categoriesMap = new Map();
+
+   models.forEach(model => {
+      // Handle cases where category might be missing
+      const category = model.category
+
+      // Use category name as the unique identifier
+      const categoryName = deslugify(category.id)
+
+      // Check if we already have this category in our map
+      if (!categoriesMap.has(categoryName)) {
+         // Store both the category object and articles array
+         categoriesMap.set(categoryName, {
+            category: category,  // Store the full category object
+            models: []        // Initialize empty articles array
+         });
+      }
+
+      // Add the post to the articles array for this category
+      categoriesMap.get(categoryName).models.push(model);
+   });
+
+   // Convert to array format that your component expects
+   const arr = Array.from(categoriesMap.values()).map(item => ({
+      category: item.category.id,  // Just use the name for the category identifier
+      models: item.models        // The array of articles
+   }));
+
+   modelsArr.value = arr
+};
+
 
 
 
@@ -320,6 +355,8 @@ const changePage = (page) => {
         fetchModels(page);
         window.scrollTo({ top: 3000, behavior: 'smooth' });
     }
+
+    console.log('page', page)
 };
 
 
@@ -333,6 +370,7 @@ onMounted(async () => {
     await countModels()
     await fetchModels()
     await fetchFeaturedModels()
+    organizeModelsByCategory(featuredModels.value)
 
     loaded.value = true
 
@@ -340,6 +378,4 @@ onMounted(async () => {
 
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
