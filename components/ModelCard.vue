@@ -28,8 +28,8 @@ const props = defineProps({
         default: "40vh"
     },
     img_width: {
-        type: Number,
-        default: 500
+        type: String,
+        default: '33vw'
     }, minimal: {
         type: Boolean,
         default: false
@@ -62,7 +62,7 @@ const formatDate = (dateString: string) => {
 
         <CardHeader class="flex-grow p-3 md:p-6">
             <div class="flex items-center gap-2 mb-2" v-if="!minimal">
-                <NuxtLink v-if="model.category" :to="`/category/${slugify(model.category.id)}`">
+                <NuxtLink v-if="model.category" :to="`/models/category/${slugify(model.category.id)}`">
                     <span class="text-xs font-medium px-2 py-1 bg-primary text-primary-foreground rounded-full">
                         {{ deslugify(model.category.id) }}
                     </span>
@@ -82,11 +82,12 @@ const formatDate = (dateString: string) => {
 
         <CardContent class="pt-0" v-if="!minimal">
             <div class="flex flex-wrap gap-1">
-
+                <TagsComponent :tags="model.tags" isModel="true" />
+                <!--
                 <span v-for="tag in model.tags" :key="tag.model_tags_id"
                     class="text-xs px-2 py-1 bg-muted rounded-full">
                     {{ tag.model_tags_id }}
-                </span>
+                </span>-->
 
             </div>
         </CardContent>

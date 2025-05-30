@@ -5,8 +5,8 @@
 
             <CarouselItem  v-for="obj in props.items" :key="obj.category" class="p-1 md:basis-1/2">
                 <div class="p-1">
-                     <h5 class="font-semibold capitalize ms-12"> {{ deslugify(obj.category) }}  </h5>
-                    <FeaturedCarouselHome :items="obj.models" :isModel="true" :minimal="true" :smallWidth="props.smallWidth"
+                     <h5 class="font-semibold capitalize ms-2 md:ms-12"> {{ deslugify(obj.category) }}  </h5>
+                    <FeaturedCarouselHome :items="obj.models" :isModel="true" :img_width="props.img_width" :img_height="props.img_height" :minimal="props.minimal" :smallWidth="props.smallWidth"
                      :mediumWidth="props.mediumWidth" :largeWidth="props.largeWidth" :itemsSm="props.itemsSm" :itemsMd="props.itemsMd" 
                      :itemsLg="props.itemsLg" :itemsXl="props.itemsXl"/>
                 </div>
@@ -15,11 +15,12 @@
         </CarouselContent>
 
         <CarouselContent v-else class="mt-1 h-[60vh] md:h-[50vh] lg:h-[50vh] xl:h-[75vh]">
-
-            <CarouselItem  v-for="obj in props.items" :key="obj.category" class="p-1 basis-1/2">
-                <div class="p-1">
-                     <h5 class="font-semibold capitalize ms-12"> {{ deslugify(obj.category) }}  </h5>
-                    <FeaturedCarouselHome :items="obj.posts" :minimal="true" :smallWidth="props.smallWidth"
+            
+            <CarouselItem  v-for="obj in props.items" :key="obj.category" class="basis-1/2">
+                <div>
+                    
+                     <h5 class="font-semibold capitalize ms-2 md:ms-12"> {{ deslugify(obj.category) }}  </h5>
+                    <FeaturedCarouselHome :items="obj.posts" :img_width="props.img_width" :img_height="props.img_height" :minimal="props.minimal" :smallWidth="props.smallWidth"
                      :mediumWidth="props.mediumWidth" :largeWidth="props.largeWidth" :itemsSm="props.itemsSm" :itemsMd="props.itemsMd" 
                      :itemsLg="props.itemsLg" :itemsXl="props.itemsXl"/>
                 </div>
@@ -50,6 +51,18 @@ const props = defineProps({
     },isModel :{
         type:Boolean,
         default:false
+    },
+     img_width:{
+        type: String,
+        default: "33vw"
+    },
+    img_height: {
+        type: String,
+        default: "15vh"
+    },
+    minimal: {
+        type: Boolean,
+        default: false
     },
     smallWidth: {
         type: Number,

@@ -17,10 +17,14 @@
             <h4 class="text-2xl font-semibold capitalize">Categorías</h4>
             <CategoryCarousel :categories="categories" />
         </section>
-          
+          <!--
         <section class="mb-3 md:mb-12 lg:px-14">
             <CategoriesCarousel :categoryArticlesArray="categoryArticles" />
         </section>
+        -->
+        <div class="w-full flex justify-center mb-3 my-12 md:my-6 lg:px-11">
+            <VerticalCarousel :items="postsArr" :smallWidth=12 :mediumWidth=11 :largeWidth=11 :itemsXl="3" img_height="40vh" img_width="600px" />
+        </div>
        
 
         <section class="px-4 lg:px-24">
@@ -103,11 +107,12 @@ const postBanners= ref([])
 const categoryArticles = ref([]);
 const tags = ref([]);
 const categories = ref([]);
-const currentPage = ref(1);
 const featuredPosts = ref([]);
+const postsArr=ref([])
+
+const currentPage = ref(1);
 const ITEMS_PER_PAGE = 4;
 const MAX_VISIBLE_PAGES = 5;
-
 const totalPosts = ref(0);
 
 const fetchBanners = async () => {
@@ -280,57 +285,38 @@ const fetchFeaturedPosts = async () => {
 
 }
 
-
 const organizePostsByCategory = (posts) => {
-    if (!posts || posts.length === 0) return [];
+   if (!posts || posts.length === 0) return [];
 
-    const categoriesMap = new Map();
+   const categoriesMap = new Map();
 
-    posts.forEach(post => {
-        // Handle cases where category might be missing
-        const category = post.category || { id: 'Featured' };
+   posts.forEach(post => {
+      // Handle cases where category might be missing
+      const category = post.category
 
-        // Use category name as the unique identifier
-        const categoryName = deslugify(category.id) || 'Featured';
+      // Use category name as the unique identifier
+      const categoryName = deslugify(category.id)
 
-        // Check if we already have this category in our map
-        if (!categoriesMap.has(categoryName)) {
-            // Store both the category object and articles array
-            categoriesMap.set(categoryName, {
-                category: category,  // Store the full category object
-                articles: []        // Initialize empty articles array
-            });
-        }
+      // Check if we already have this category in our map
+      if (!categoriesMap.has(categoryName)) {
+         // Store both the category object and articles array
+         categoriesMap.set(categoryName, {
+            category: category,  // Store the full category object
+            posts: []        // Initialize empty articles array
+         });
+      }
 
-        // Add the post to the articles array for this category
-        categoriesMap.get(categoryName).articles.push(post);
-    });
+      // Add the post to the articles array for this category
+      categoriesMap.get(categoryName).posts.push(post);
+   });
 
-    // Convert to array format that your component expects
-    return Array.from(categoriesMap.values()).map(item => ({
-        category: item.category.id,  // Just use the name for the category identifier
-        articles: item.articles        // The array of articles
-    }));
-};
+   // Convert to array format that your component expects
+   const arr = Array.from(categoriesMap.values()).map(item => ({
+      category: item.category.id,  // Just use the name for the category identifier
+      posts: item.posts        // The array of articles
+   }));
 
-const populateCategoryCarrousels = async () => {
-    const featuredPosts = await fetchFeaturedPosts();
-    if (featuredPosts) {
-        // First organize by category
-        const organizedPosts = organizePostsByCategory(featuredPosts);
-
-        // Filter out duplicates (in case organizePostsByCategory didn't catch them)
-        const uniqueCategories = new Set();
-        categoryArticles.value = organizedPosts.filter(item => {
-            if (!uniqueCategories.has(item.category)) {
-                uniqueCategories.add(item.category);
-                return true;
-            }
-            return false;
-        });
-
-        console.log('Unique category arrays', categoryArticles.value);
-    }
+   postsArr.value = arr
 };
 
 // Pagination computed properties
@@ -384,18 +370,16 @@ onMounted(async () => {
         fetchTags(),
         countPosts(),
         fetchPosts(),
-        populateCategoryCarrousels()
-        //fetchBannerImages(),
-        
-        /*
-        
         fetchFeaturedPosts(),
-        
-        fetchTags(),*/
-        
+        fetchTags()
+    
     ]);
 
-    console.log('Category Articles', categoryArticles.value)
+
+    organizePostsByCategory(featuredPosts.value)
+    console.log('posts arr', postsArr.value)
+
+    
 
     loaded.value = true;
 

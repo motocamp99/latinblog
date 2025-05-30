@@ -1,8 +1,8 @@
 <template>
     <div class="flex flex-wrap gap-2">
         <Badge v-for="tag in tags" :key="tag">
-            <NuxtLink :to="`/tags/${tag.tags_id.toLowerCase()}`" class="text-current">
-                {{ tag.tags_id }}
+            <NuxtLink :to="`/models/tags/${tag.post_tags_id.toLowerCase()}`" class="text-current">
+                {{ tag.post_tags_id }}
             </NuxtLink>
         </Badge>
     </div>

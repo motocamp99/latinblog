@@ -1,7 +1,7 @@
 <template>
     <div class="relative w-full aspect-[16/9] rounded-lg overflow-hidden shadow-lg" id="main-container">
         <NuxtImg :src="imageUrl" :alt="title" class="w-full h-full object-cover"
-            loading="eager" provider="directus" />
+            loading="eager" provider="directus" quality="90" width="90vw"  />
         <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-8">
             <div class="text-white">
                 <h1 class="sm:text-7xl md:text-5xl font-bold mb-2">{{ title && title.length > 50 ? `${title.slice(0, 50)}...` : title}}</h1>

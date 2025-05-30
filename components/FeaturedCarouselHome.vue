@@ -12,11 +12,18 @@
                     class="carousel-item"
                     :style="itemSizeStyles"
                 >
-                    <div class="p-1">
-                        <ModelCard v-if="isModel" :model="item" :img_width="600" :img_height="img_height"
+                    <div class="px-1 md:px-3 ms-3 md:ms-0 ">
+                        <ModelCard v-if="isModel" :model="item" :img_width="props.img_width" :img_height="img_height"
                             :minimal="minimal" />
-                        <ArticleCard v-else :article="item" :img_width="600" :img_height="img_height"
+                        <div v-else>
+
+                        <ArticleCardMini v-if="props.minimal" :article="item" :img_width="props.img_width" :img_height="img_height"
                             :minimal="minimal" />
+
+                        <ArticleCard v-else :article="item" :img_width="props.img_width" :img_height="img_height"
+                            :minimal="minimal" />
+                        </div>
+                        
                     </div>
                 </CarouselItem>
             </CarouselContent>
@@ -30,8 +37,8 @@
 import { computed } from 'vue'
 import { Card, CardContent } from '@/components/ui/card'
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
-import ArticleCard from './ArticleCard.vue'
-import ModelCard from './ModelCard.vue'
+//import ArticleCard from './ArticleCard.vue'
+//import ModelCard from './ModelCard.vue'
 
 interface modelArr {
     type: object[]
@@ -46,6 +53,10 @@ const props = defineProps({
     isModel: {
         type: Boolean,
         default: false
+    },
+    img_width:{
+        type: String,
+        default: "33vw"
     },
     img_height: {
         type: String,

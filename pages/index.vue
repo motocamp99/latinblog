@@ -14,20 +14,21 @@
                <CarouselSplide :images="modelBanners" />
             </div>
             <div class="w-full md:w-5/12 my-12 md:my-6">
-               <VerticalCarousel :items="modelsArr" :isModel="true" :smallWidth=12 :mediumWidth=9 :largeWidth=10 :itemsXl=2 />
+               <VerticalCarousel :items="modelsArr" :isModel="true" :minimal="true" :smallWidth=12 :mediumWidth=10 :largeWidth=10 :itemsSm=1 :itemsMd=2 :itemsLg=2 :itemsXl=2 />
             </div>
          </section>
 
          <section>
             <div class="mb-8 px-6">
                <h2 class="text-2xl font-bold mb-4">Model Tags</h2>
-               <Tags :tags="modelTags" />
+               <!--{{ modelTags }}-->
+               <TagsComponent isModel="true" :tags="modelTags" />
             </div>
          </section>
 
          <section class="flex flex-col-reverse md:flex-row lg:flex-row my-12">
             <div class="w-full md:w-5/12 p-0 flex flex-col justify-center items-start ">
-               <VerticalCarousel :items="postsArr" :smallWidth=12 :mediumWidth=9 :largeWidth=10 :itemsXl=2 />
+               <VerticalCarousel :items="postsArr" :smallWidth=12 :mediumWidth=10 :largeWidth=10 :itemsSm=1 :itemsMd=2 :itemsLg=2 :itemsXl=2 :minimal="true" img_height="25vh" />
             </div>
             <div class="w-full md:w-7/12 my-12 md:my-6">
               <!-- <h2 class="text-4xl font-bold mb-4 ms-4">Magazine</h2>-->
@@ -38,7 +39,8 @@
          <section>
             <div class="mb-8 px-6">
                <h2 class="text-2xl font-bold mb-4">Post Tags</h2>
-               <Tags :tags="modelTags" />
+              <!-- {{ postTags }}-->
+               <TagsComponent :tags="postTags" />
             </div>
          </section>
 
@@ -114,7 +116,7 @@ const fetchBanners = async () => {
 
 
       //bannerImages.value = result.data
-      console.log('resulted banners', bannerImages.value)
+      //console.log('resulted banners', bannerImages.value)
 
    } catch (error) {
       console.error('Error fetching banners:', error);
@@ -203,7 +205,12 @@ const fetchPostTags = async () => {
       );
       if (!response.ok) throw new Error('Failed to fetch info data');
       const result = await response.json();
-      postTags.value = result.data
+      postTags.value = result.data.map(elem=>{
+         return {
+            post_tags_id:elem.id,
+
+         }
+      })
 
    } catch (error) {
       console.error('error with tags', error)
@@ -225,7 +232,12 @@ const fetchModelTags = async () => {
       );
       if (!response.ok) throw new Error('Failed to fetch info data');
       const result = await response.json();
-      modelTags.value = result.data
+      modelTags.value = result.data.map(elem=>{
+         return {
+            model_tags_id:elem.id,
+            
+         }
+      })
 
    } catch (error) {
       console.error('error with tags', error)

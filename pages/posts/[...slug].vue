@@ -1,25 +1,18 @@
 <template>
     <div class="px-4 sm:px-2 lg:px-8">
 
-        {{ article }}
-
-        <NuxtImg
-            :src="article.image?.id ? article.image?.id :  `649ba7ca-4874-4dde-a18b-d4026a94265e`"
-            :alt="article.id" class="w-full h-full object-cover rounded-t-lg" loading="lazy" width=300 quality=70
-            :modifiers="{ fit: 'cover' }" provider="directus" />
-
-        <!--
         <div v-if="loaded">
-            
-
 
             <div class="mb-12">
-                
-                <BannerImageComponent :imageUrl="article.image?.id ? `${article.image.id}` : '310dc800-3921-43ce-86a2-a8f2b2d42f2f'" :title="article.title"
+
+                <BannerImageComponent
+                    :imageUrl="article.image?.id ? `${article.image.id}` : '310dc800-3921-43ce-86a2-a8f2b2d42f2f'"
+                    :title="article.title"
                     :subtitle="article.description && article.description.length > 180 ? `${article.description.slice(0, 180)}...` : article.description" />
             </div>
 
-            <div style="display: flex; flex-direction: column; justify-content: center; align-items: center;" v-if="article" >
+            <div style="display: flex; flex-direction: column; justify-content: center; align-items: center;"
+                v-if="article">
 
                 <div class="flex-1 w-7xl">
 
@@ -31,24 +24,28 @@
                             </div>
                             <div id="details-2" style="width: 40%;">
                                 <h2 class="text-2xl font-semibold mb-3">Detalles</h2>
-                                <ul class="space-y-1">
-                                    <li class="flex">
+                                <ul class="space-y-2">
+                                    <li class="flex gap-2">
                                         <span class="detail font-medium w-24">Fecha:</span>
                                         <span>{{ formatDate(article.date_created) }}</span>
                                     </li>
-                                    <li class="flex">
+                                    <li class="flex gap-2">
                                         <span class="detail font-medium w-24">Categoría:</span>
-                                        {{ article.category.name }}
+
+                                        <span
+                                            class="text-xs font-medium px-2 py-1 bg-primary text-primary-foreground rounded-full">
+                                            <NuxtLink :to="`/posts/category/${article.category.id}`" class="text-current text-xs md:text-xs" >
+                                                {{ deslugify(article.category.id) }}
+                                            </NuxtLink>
+                                            
+                                        </span>
+
                                     </li>
-                                    <li class="flex items-start">
+                                    <li class="flex items-start gap-2">
                                         <span class="detail font-medium w-24">Etiquetas:</span>
-                            
                                         <ArticleTagsBlackComponent :tags="article.tags || []" />
-                                
                                     </li>
                                 </ul>
-
-                            
                             </div>
                         </div>
                     </Card>
@@ -57,26 +54,23 @@
                 <div style="display: flex; flex-direction: row; width: 90vw; position: relative; gap:100px">
 
                     <div class="toc-container">
-                        
-                        
+
+
                         <Card class="p-4 bg-secondary">
                             <h2 class="text-2xl font-semibold mb-4">Tabla de Contenido</h2>
-                            <TableOfContents  :html-content="processHtml(article.content)" />
+                            <TableOfContents :html-content="processHtml(article.content)" />
                         </Card>
                     </div>
 
 
                     <div style="width: 60vw;">
-                        <article v-html="processHtml(article.content)"  class="p-4" id="article-card" >
+                        <article v-html="processHtml(article.content)" class="p-4" id="article-card">
                         </article>
 
                         <div v-if="articleImages">
-                            {{articleImages}}
                             <ArticleImageGallery :images="articleImages" />
                         </div>
                     </div>
-
-                    
 
                 </div>
             </div>
@@ -92,7 +86,7 @@
             </svg>
             <span class="sr-only">Cargando...</span>
         </div>
-        -->
+
     </div>
 </template>
 
@@ -105,7 +99,7 @@ let article = ref({})
 const loaded = ref(false)
 const route = useRoute()
 //const { id, slug } = route.params
-const id = route.params.id
+//const id = route.params.id
 const slug = route.params.slug ? route.params.slug[0] : ''
 
 const processedHtml = ref('')
@@ -153,23 +147,42 @@ const formatDate = (dateString) => {
 }
 
 
-const fetchArticles = async () => {
+const fetchArticleBySlug = async (slug) => {
 
-    const response = await fetch(
+    try {
+        console.log('slug is ', slug)
+        const query = `
+                  { "slug" : 
+                          {"_eq" : "${slug}"} 
+                  }
+              `
+        const response = await fetch(
 
-        `https://latin.dedyn.io/items/posts?fields=*.*`,
-        {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            `https://latin.dedyn.io/items/posts?fields=*.*&filter=${query}&limit=1&offset=0`,
+            {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            }
+        );
+        if (!response.ok) throw new Error('Failed to fetch info data');
+        const result = await response.json();
+        article.value = result.data[0]
+        console.log('resulted article', article.value)
+
+        if (article.value.gallery_images) {
+
+            articleImages.value = article.value.gallery_images.map(elem => elem.directus_files_id)
+            console.log('cat images', articleImages.value)
+            console.log('raw', article.value.gallery_images)
         }
-    );
-    if (!response.ok) throw new Error('Failed to fetch info data');
-    const result = await response.json();
 
-    console.log('resulted articles', result.data)
+        console.log('articleimages', articleImages.value)
 
+    } catch (error) {
+        console.log('error', error)
+    }
 
 }
 
@@ -206,8 +219,6 @@ const fetchArticle = async (id) => {
     //console.log('gallll', articleImages.value.map(elem=>elem.directus_files_id))
     */
 
-
-
 }
 
 /*
@@ -223,8 +234,9 @@ const socialLinks = computed(() => ({
 
 onMounted(async () => {
 
-    await fetchArticle(id)
-    await fetchArticles()
+    //await fetchArticle(id)
+    await fetchArticleBySlug(slug)
+    await fetchArticleBySlug(slug)
 
     /*
 
