@@ -5,36 +5,25 @@
 
         <div v-if="loaded">
 
-            <section class="mb-6">
+            <section class="mb-6 mt-6">
                 <TagBanner :tag="tag" />
             </section>
-
-
+             
             <section class="px-4 lg:px-24">
                 
                 <h2 class="text-2xl font-bold mb-6">Artículos Sugeridos (Tag: <span> {{ tagName }} </span>) </h2>
+
                 <section class="mb-6">
-                    <FeaturedPostsCarousel :posts="featuredArticles" />
+                    <FeaturedCarousel :items="featuredArticles" />
                 </section>
-                
-
+               
                 <div v-if="allArticles.length > 0">
-
-                    <!--
-                    <div class="mb-8">
-                        <h2 class="text-2xl font-bold mb-4">Etiquetas</h2>
-                        <Tags :tags="tags" @tag-selected="handleTagSelect" />
-                    </div>-->
-
 
                     <h2 class="text-2xl font-bold mb-6">Todos Los Artículos ({{ totalPosts }}) </h2>
                     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                        
                         <ArticleCard v-for="article in allArticles" :key="article.title" :article="article"
                             class="w-full h-full" />
-                    
                     </div>
-
 
                     <nav aria-label="Page navigation" class="mt-8 mb-12">
                         <ul class="flex justify-center lg:justify-start flex-wrap gap-1">
@@ -76,8 +65,9 @@
                 <div v-else class="text-center py-12">
                     <p class="text-gray-500">No se encontraron artículos</p>
                 </div>
+               
             </section>
-
+        
 
         </div>
         <div v-else class="flex justify-center items-center h-64">
@@ -100,9 +90,10 @@
 
 const route = useRoute();
 const tagSlug = ref(route.params.tagSlug[0]);
+
 const tagName = ref(deslugify(route.params.tagSlug[0]));
-const categoryName = ref(deslugify(route.params.categorySlug))
-const categorySlug = route.params.categorySlug
+const categoryName = ref(deslugify(route.params.categoryId))
+const categorySlug = route.params.categoryId
 const tag = ref({})
 const allArticles = ref([]);
 const loaded = ref(false);
@@ -123,7 +114,7 @@ const fetchTag = async (tagSlug) => {
     try {
         const response = await fetch(
 
-            `https://latin.dedyn.io/items/tags?fields=*.*&filter={"slug":{"_eq" : "${tagSlug}"  }}` //working
+            `https://latin.dedyn.io/items/post_tags?fields=*.*&filter={"id":{"_eq" : "${tagSlug}"  }}` //working
             ,
             {
                 method: 'GET',
@@ -135,9 +126,11 @@ const fetchTag = async (tagSlug) => {
         if (!response.ok) throw new Error('Failed to fetch info data');
         const result = await response.json();
 
+        console.log('resulted tag', result.data)
+
         tag.value = result.data[0]
         tag.value.description = categoryName.value
-        //console.log('resulted tag', tag.value)
+        console.log('resulted tag', tag.value)
 
     } catch (error) {
         console.log('error with tag')
@@ -145,12 +138,12 @@ const fetchTag = async (tagSlug) => {
 
 }
 
-const countCategoryTagPosts = async (categorySlug, tagName) => {
+const countCategoryTagPosts = async (categorySlug, tagSlug) => {
     try {
         
         const query = `{
                         "category": { 
-                                "slug":{
+                                "id":{
                                     "_eq" : "${categorySlug}"
                                     }
                              },
@@ -158,7 +151,7 @@ const countCategoryTagPosts = async (categorySlug, tagName) => {
                         "_and": [
                             {"tags":{
                              "_some": {
-                                "tags_id" : {"_eq" : "${tagName}" } }  
+                                "post_tags_id" : {"_eq" : "${tagSlug}" } }  
                                 } 
                             }]
                         
@@ -191,13 +184,13 @@ const countCategoryTagPosts = async (categorySlug, tagName) => {
 
 
 
-const fetchPostsByCategoryAndTag = async (categorySlug, tagName, page = 1) => {
+const fetchPostsByCategoryAndTag = async (categorySlug, tagSlug, page = 1) => {
 
     const offset = (page - 1) * ITEMS_PER_PAGE;
 
     const query = `{
                     "category": { 
-                            "slug":{
+                            "id":{
                                 "_eq" : "${categorySlug}"
                                 }
                             },
@@ -205,7 +198,7 @@ const fetchPostsByCategoryAndTag = async (categorySlug, tagName, page = 1) => {
                     "_and": [
                         {"tags":{
                             "_some": {
-                            "tags_id" : {"_eq" : "${tagName}" } }  
+                            "post_tags_id" : {"_eq" : "${tagSlug}" } }  
                             }
                         }]
                     }`
@@ -234,11 +227,11 @@ const fetchPostsByCategoryAndTag = async (categorySlug, tagName, page = 1) => {
 
 }
 
-const fetchFeaturedPostsByTagName = async (tagName) => {
+const fetchFeaturedPostsByTagName = async (tagSlug) => {
 
 //  const query=`{ "category": { "name":{"_eq" : "${category}" }  } ,"_and" : [{"featured" : {"_eq" : true} }] }` //working
 
-const query = `{ "tags": { "_some": {"tags_id" : {"_eq" : "${tagName}" } }  } 
+const query = `{ "tags": { "_some": {"post_tags_id" : {"_eq" : "${tagSlug}" } }  } 
           ,"_and" :
          [
           {"featured" : 
@@ -298,7 +291,7 @@ const visiblePages = computed(() => {
 // Change page handler
 const changePage = (page) => {
     if (page > 0 && page <= totalPages.value && page !== currentPage.value) {
-        fetchPostsByCategoryAndTag(categorySlug, tagName.value, page);
+        fetchPostsByCategoryAndTag(categorySlug, tagSlug.value, page);
         window.scrollTo({ top: 1000, behavior: 'smooth' });
     }
 };
@@ -306,22 +299,11 @@ const changePage = (page) => {
 
 onMounted(async () => {
 
-    await Promise.all([
-        //fetchInit(),
-
-    ]);
-
-    
-
-    //console.log('Category Articles', categoryArticles.value)
-    //console.log('tag params', params.value.tagSlug[0])
-    //console.log('tagSlug', tagSlug.value)
     await fetchTag(tagSlug.value)
-    await countCategoryTagPosts(categorySlug, tagName.value)
-    await fetchPostsByCategoryAndTag(categorySlug, tagName.value)
-    await fetchFeaturedPostsByTagName(tagName.value)
-    //console.log('catslug', categorySlug)
-    console.log('totalposts', totalPosts.value)
+    await fetchFeaturedPostsByTagName(tagSlug.value)
+    await fetchPostsByCategoryAndTag(categorySlug, tagSlug.value)
+    await countCategoryTagPosts(categorySlug, tagSlug.value)
+
     loaded.value = true;
 
 })

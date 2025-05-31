@@ -6,9 +6,9 @@
     <!-- Gallery Cover Image -->
     <div class="relative aspect-[4/3] w-full overflow-hidden">
       <NuxtImg
-        :src="gallery.image.url"
+        :src="gallery.image?.url || 'https://latin.dedyn.io/assets/29b87019-62c4-4601-baf0-8feced4d00e6' "
         :alt="gallery.name || 'Gallery image'"
-        :fallback="gallery.image.fallback_url || '/placeholder.jpg'"
+        :fallback="gallery.image?.fallback_url || '/placeholder.jpg'"
         class="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
         loading="lazy"
       />

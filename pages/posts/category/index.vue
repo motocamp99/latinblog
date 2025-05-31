@@ -1,6 +1,6 @@
 <template>
     <div>
-        categories
+        posts categories
     </div>
 </template>
 

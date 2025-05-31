@@ -13,7 +13,7 @@
 
         <CardHeader class="flex-grow p-3 md:p-6">
             <div class="flex items-center gap-2 mb-2" v-if="!minimal">
-                <NuxtLink v-if="article.category" :to="`/models/category/${slugify(article.category.id)}`">
+                <NuxtLink v-if="article.category" :to="`/posts/category/${slugify(article.category.id)}`">
                     <span class="text-xs font-medium px-1 md:px-3 py-1 bg-primary text-primary-foreground rounded-full">
                         {{ deslugify(article.category.id) }}
                     </span>
@@ -28,7 +28,7 @@
 
 
 
-        <CardContent class="pt-0 px-1 md:px-6 " v-if="!minimal">
+        <CardContent class="pt-0 pb-0 px-1 md:px-6 " v-if="!minimal">
             <TagsComponent :tags="article.tags || []" />
         </CardContent>
 

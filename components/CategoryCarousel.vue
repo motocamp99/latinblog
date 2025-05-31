@@ -17,6 +17,11 @@ const props = defineProps({
         default: false
     }
 })
+
+function getLink(isModel, slug){
+    return isModel ? `/models/category/${slug}` : `/posts/category/${slug}` 
+}
+
 </script>
 
 <template>
@@ -25,8 +30,9 @@ const props = defineProps({
             <CarouselContent>
                 <CarouselItem v-for="category in categories" :key="slugify(category.id)"
                     class="sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5">
+                    
                     <div class="p-1">
-                        <NuxtLink :to="`${isModel ? 'models' : 'posts'}/category/${slugify(category.id)}`">
+                        <NuxtLink :to="getLink(isModel,category.id)">
                             <Card class="h-full transition-all hover:shadow-lg">
                                 <CardContent class="flex flex-col items-center p-0 aspect-[4/3]">
                                   <!--{{category}}-->  

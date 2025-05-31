@@ -3,7 +3,9 @@
     <div style="margin-top: 60px !important;">
 
         <div v-if="loaded">
+        
             <div v-if="model.status === 'published'">
+
                 
                 <ModelDetails :model="model" :loaded="loaded" />
               
@@ -24,11 +26,11 @@
                
                 <div class="p-6">
                     <div v-show="activeTab === 'images'">
-                        <ModelImages :images="images" />
+                        <ModelImages :images="images" v-if="images" />
                     </div>
                      
                     <div v-show="activeTab === 'galleries'">
-                        <GalleriesGrid :galleries="galleries" />
+                       <GalleriesGrid v-if="galleries && galleries.length!==0" :galleries="galleries" />
                     </div>
 
                     <div v-show="activeTab === 'compilations'">
@@ -45,7 +47,7 @@
                 Coming Soon
             </div>
 
-
+        
         </div>
         <div v-else class="flex justify-center items-center h-64">
             <svg class="animate-spin h-8 w-8 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none"
@@ -83,31 +85,40 @@ const tabs = [
 ]
 //const activeTab = 'images'
 
-const fetchModel = async (id) => {
+const fetchModelBySlug = async (slug) => {
 
-    const response = await fetch(
+    try {
+        console.log('slug is ', slug)
+        const query = `
+                  { "slug" : 
+                          {"_eq" : "${slug}"} 
+                  }
+              `
+        const response = await fetch(
 
-        `https://latin.dedyn.io/items/models/${id}/?fields=*.*`,
-        {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        }
-    );
-    if (!response.ok) throw new Error('Failed to fetch info data');
-    const result = await response.json();
-    console.log('rr', result)
-    model.value = result.data
-    //console.log('resulted article', result.data)
-    //console.log('gallll', articleImages.value.map(elem=>elem.directus_files_id))
+            `https://latin.dedyn.io/items/models?fields=*.*&filter=${query}&limit=1&offset=0`,
+            {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            }
+        );
+        if (!response.ok) throw new Error('Failed to fetch info data');
+        const result = await response.json();
+        model.value = result.data[0]
+        
+
+    } catch (error) {
+        console.log('error', error)
+    }
 
 }
 
 
-const fetchGalleries = async (id) => {
+const fetchGalleriesBySlug = async (slug) => {
 
-    const url = `https://latin.dedyn.io/items/galleries/?fields=name,id,tags.*,image.*&filter[model][id][_eq]=${id}`
+    const url = `https://latin.dedyn.io/items/galleries/?fields=name,id,tags.*,image.*&filter[model][slug][_eq]=${slug}`
 
     const response = await fetch(
 
@@ -121,16 +132,14 @@ const fetchGalleries = async (id) => {
     );
     if (!response.ok) throw new Error('Failed to fetch info data');
     const result = await response.json();
-    console.log('rresults', result)
+    console.log('galleries results', result)
     galleries.value = result.data
-    //console.log('resulted article', result.data)
-    //console.log('gallll', articleImages.value.map(elem=>elem.directus_files_id))
 
 }
 
-const fetchImages = async (id) => {
+const fetchImagesBySlug = async (slug) => {
 
-    const url = `https://latin.dedyn.io/items/images?fields=url,fallback_url,status,alt,gallery.id,gallery.name,tags.*&filter[model][id][_eq]=${id}`
+    const url = `https://latin.dedyn.io/items/images?fields=url,fallback_url,status,alt,gallery.id,gallery.name,tags.*&filter[model][slug][_eq]=${slug}`
     //const url=`https://latin.dedyn.io/items/images?fields=*.*&filter[model][id][_eq]=${id}`
 
     const response = await fetch(
@@ -147,20 +156,23 @@ const fetchImages = async (id) => {
     const result = await response.json();
     console.log('images rresults', result)
     images.value = result.data
-    //galleries.value = result.data
-    //console.log('resulted article', result.data)
-    //console.log('gallll', articleImages.value.map(elem=>elem.directus_files_id))
 
 }
-
 
 onMounted(async () => {
 
     //await fetchCategories()
-    await fetchModel(id)
-    await fetchGalleries(id)
-    await fetchImages(id)
 
+    await fetchModelBySlug(slug)
+    await fetchGalleriesBySlug(slug)
+    await fetchImagesBySlug(slug)
+
+    /*
+    await fetchModel(id)
+    
+    
+
+    */
     loaded.value = true
 
 })

@@ -1,33 +1,39 @@
+<template>
+    <Carousel orientation="vertical" class="w-full h-[60vh] md:h-[50vh] lg:h-[50vh] xl:h-[75vh]"
+        :opts="{ align: 'start', }">
+        <CarouselContent v-if="isModel" class="mt-1 h-[60vh] md:h-[50vh] lg:h-[50vh] xl:h-[75vh]">
+            <!--h-[50vh] md:h-[50vh] lg:h-[50vh] xl:h-[75vh]-->
 
-<template >
-    <Carousel orientation="vertical" class="w-full h-[60vh] md:h-[50vh] lg:h-[50vh] xl:h-[75vh]" :opts="{align: 'start',}">
-        <CarouselContent v-if="isModel" class="mt-1 h-[60vh] md:h-[50vh] lg:h-[50vh] xl:h-[75vh]"> <!--h-[50vh] md:h-[50vh] lg:h-[50vh] xl:h-[75vh]-->
-
-            <CarouselItem  v-for="obj in props.items" :key="obj.category" class="p-1 md:basis-1/2">
+            <CarouselItem v-for="obj in props.items" :key="obj.category" class="p-1 md:basis-1/2">
                 <div class="p-1">
-                     <h5 class="font-semibold capitalize ms-2 md:ms-12"> {{ deslugify(obj.category) }}  </h5>
-                    <FeaturedCarouselHome :items="obj.models" :isModel="true" :img_width="props.img_width" :img_height="props.img_height" :minimal="props.minimal" :smallWidth="props.smallWidth"
-                     :mediumWidth="props.mediumWidth" :largeWidth="props.largeWidth" :itemsSm="props.itemsSm" :itemsMd="props.itemsMd" 
-                     :itemsLg="props.itemsLg" :itemsXl="props.itemsXl"/>
+                    <NuxtLink :to="`/models/category/${obj.category}`">
+                         <h5 class="font-semibold capitalize ms-2 md:ms-12"> {{ deslugify(obj.category) }} </h5>
+                    </NuxtLink>
+                    <FeaturedCarouselHome :items="obj.models" :isModel="true" :img_width="props.img_width"
+                        :img_height="props.img_height" :minimal="props.minimal" :smallWidth="props.smallWidth"
+                        :mediumWidth="props.mediumWidth" :largeWidth="props.largeWidth" :itemsSm="props.itemsSm"
+                        :itemsMd="props.itemsMd" :itemsLg="props.itemsLg" :itemsXl="props.itemsXl" />
                 </div>
             </CarouselItem>
 
         </CarouselContent>
 
         <CarouselContent v-else class="mt-1 h-[60vh] md:h-[50vh] lg:h-[50vh] xl:h-[75vh]">
-            
-            <CarouselItem  v-for="obj in props.items" :key="obj.category" class="basis-1/2">
+
+            <CarouselItem v-for="obj in props.items" :key="obj.category" class="basis-1/2">
                 <div>
-                    
-                     <h5 class="font-semibold capitalize ms-2 md:ms-12"> {{ deslugify(obj.category) }}  </h5>
-                    <FeaturedCarouselHome :items="obj.posts" :img_width="props.img_width" :img_height="props.img_height" :minimal="props.minimal" :smallWidth="props.smallWidth"
-                     :mediumWidth="props.mediumWidth" :largeWidth="props.largeWidth" :itemsSm="props.itemsSm" :itemsMd="props.itemsMd" 
-                     :itemsLg="props.itemsLg" :itemsXl="props.itemsXl"/>
+                    <NuxtLink :to="`/posts/category/${obj.category}`">
+                         <h5 class="font-semibold capitalize ms-2 md:ms-12"> {{ deslugify(obj.category) }} </h5>
+                    </NuxtLink>
+                    <FeaturedCarouselHome :items="obj.posts" :img_width="props.img_width" :img_height="props.img_height"
+                        :minimal="props.minimal" :smallWidth="props.smallWidth" :mediumWidth="props.mediumWidth"
+                        :largeWidth="props.largeWidth" :itemsSm="props.itemsSm" :itemsMd="props.itemsMd"
+                        :itemsLg="props.itemsLg" :itemsXl="props.itemsXl" />
                 </div>
             </CarouselItem>
 
         </CarouselContent>
-        
+
         <CarouselPrevious />
         <CarouselNext />
     </Carousel>
@@ -48,11 +54,11 @@ const props = defineProps({
         type: Array as PropType<modelArr[]>,
         required: true,
         default: () => []
-    },isModel :{
-        type:Boolean,
-        default:false
+    }, isModel: {
+        type: Boolean,
+        default: false
     },
-     img_width:{
+    img_width: {
         type: String,
         default: "33vw"
     },

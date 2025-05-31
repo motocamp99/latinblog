@@ -2,34 +2,42 @@
     <div>
 
         <div v-if="loaded">
-            <section class="mb-6">
+            <section class="mt-6 mb-6">
+                <!--{{ category }}-->
                 <CategoryBanner :category="category" />
             </section>
-
+            
             <section class="px-4 lg:px-24">
 
                 <h2 class="text-2xl font-bold mb-6">Artículos Sugeridos</h2>
                 <section class="mb-6">
-                    <FeaturedPostsCarousel :posts="featuredPosts" />
+                    <!--{{ featuredPosts}}-->
+
+                    <FeaturedCarousel :items="featuredPosts"  />
                 </section>
 
+                
                 <div v-if="allArticles.length > 0">
-
-
+                    <!--{{ allArticles }}-->
+                    
+                   
+                   
                     <div class="mb-8">
                         <h2 class="text-2xl font-bold mb-4">Etiquetas</h2>
-                        <Tags :tags="tags" @tag-selected="handleTagSelect" :categorySlug="categorySlug" />
+                        <!--{{ tags }}--> 
+                       <Tags :tags="tags" @tag-selected="handleTagSelect" :categorySlug="categoryId" />
                     </div>
 
+                    
 
                     <h2 class="text-2xl font-bold mb-6">Todos Los Artículos ({{ totalPosts }})</h2>
-
+                   
                     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                         <ArticleCard v-for="article in allArticles" :key="article.title" :article="article"
                             class="w-full h-full" />
                     </div>
 
-
+                     
                     <nav aria-label="Page navigation" class="mt-8 mb-12">
                         <ul class="flex justify-center lg:justify-start flex-wrap gap-1">
                             <li>
@@ -64,19 +72,22 @@
                             </li>
                         </ul>
                     </nav>
+                     
                 </div>
 
                 <div v-else class="text-center py-12">
                     <p class="text-gray-500">No se encontraron artículos</p>
                 </div>
 
+                
                 <section class="mb-12">
                     <h4 class="text-2xl font-semibold capitalize">Más Categorías</h4>
                     <CategoryCarousel :categories="categories" />
                 </section>
-
+                
+                
             </section>
-
+           
         </div>
         <div v-else class="flex justify-center items-center h-64">
             <svg class="animate-spin h-8 w-8 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none"
@@ -96,7 +107,7 @@
 import { ref, computed, onMounted } from 'vue';
 
 const route = useRoute();
-const categorySlug = ref(route.params.categorySlug);
+const categoryId = ref(route.params.categoryId);
 const categories = ref([]);
 const allArticles = ref([]);
 const tags = ref({});
@@ -105,15 +116,18 @@ const loaded = ref(false);
 const featuredPosts = ref([]);
 
 const currentPage = ref(1);
-const ITEMS_PER_PAGE = 4;
+const ITEMS_PER_PAGE = 1;
 const MAX_VISIBLE_PAGES = 5;
 const totalPosts = ref(0)
 
 
-const fetchCategory = async (slug) => {
+const fetchCategory = async (id) => {
+
+    console.log('slug', id)
+
     const response = await fetch(
 
-        `https://latin.dedyn.io/items/categories?fields=*.*&filter={"slug":{"_eq" : "${slug}"  }}` //working
+        `https://latin.dedyn.io/items/posts_categories?fields=*.*&filter={"id":{"_eq" : "${id}"  }}` //working
         ,
         {
             method: 'GET',
@@ -132,7 +146,7 @@ const fetchCategory = async (slug) => {
 const countCategoryPosts = async (slug) => {
     try {
         const response = await fetch(
-            `https://latin.dedyn.io/items/posts?aggregate[count]=id&filter={ "category": { "slug":{"_eq" : "${slug}" }  }}`,
+            `https://latin.dedyn.io/items/posts?aggregate[count]=id&filter={ "category": { "id":{"_eq" : "${slug}" }  }}`,
             {
                 method: 'GET',
                 headers: {
@@ -160,7 +174,7 @@ const fetchPostsByCategory = async (slug, page = 1) => {
 
     const response = await fetch(
 
-        `https://latin.dedyn.io/items/posts?fields=*.*&filter={ "category": { "slug":{"_eq" : "${slug}" } }}&limit=${ITEMS_PER_PAGE}&offset=${offset}` //working
+        `https://latin.dedyn.io/items/posts?fields=*.*&filter={ "category": { "id":{"_eq" : "${slug}" } }}&limit=${ITEMS_PER_PAGE}&offset=${offset}` //working
 
         ,
         {
@@ -187,20 +201,23 @@ const fetchTagCountsByCategory = async (categoryId) => {
     try {
         // Make the request
         const response = await fetch(
-            `https://latin.dedyn.io/items/posts_tags?aggregate[count]=id&groupBy[]=tags_id&filter[posts_id][category][_eq]=${categoryId}`
+            `https://latin.dedyn.io/items/posts_post_tags?aggregate[count]=id&groupBy[]=post_tags_id&filter[posts_id][category][_eq]=${categoryId}`
         );
 
         if (!response.ok) throw new Error('Failed to fetch tag counts');
 
         const result = await response.json();
+
+        console.log('tags', result.data)
+
         tags.value = result.data.map(tag => {
             return {
-                id: tag.tags_id,
+                id: tag.post_tags_id,
                 count: tag.count.id
             }
         })
 
-        console.log('tags', result.data)
+        
 
     } catch (error) {
         console.error('Error fetching tag counts:', error);
@@ -256,7 +273,7 @@ const fetchCategories = async () => {
     try {
         const response = await fetch(
 
-            'https://latin.dedyn.io/items/categories?fields=*.*,category_image.*'
+            'https://latin.dedyn.io/items/posts_categories?fields=*.*,category_image.*'
             ,
             {
                 method: 'GET',
@@ -276,6 +293,8 @@ const fetchCategories = async () => {
     }
 
 }
+
+
 
 // Pagination computed properties
 const totalPages = computed(() => Math.ceil(totalPosts.value / ITEMS_PER_PAGE));
@@ -309,7 +328,7 @@ const visiblePages = computed(() => {
 // Change page handler
 const changePage = (page) => {
     if (page > 0 && page <= totalPages.value && page !== currentPage.value) {
-        fetchPostsByCategory(categorySlug.value, page);
+        fetchPostsByCategory(categoryId.value, page);
         window.scrollTo({ top: 1000, behavior: 'smooth' });
     }
 };
@@ -317,24 +336,21 @@ const changePage = (page) => {
 
 
 onMounted(async () => {
-    //console.log('params', params.categorySlug)
 
-    //await fetchContent(); 
-    //await fetchPosts()
-
-
-
-    await fetchCategory(categorySlug.value)
+    await fetchCategory(categoryId.value)
+    await fetchPostsByCategory(categoryId.value)
+    await fetchFeaturedPostsByCategory(categoryId.value)
+    await fetchTagCountsByCategory(categoryId.value)
+    await countCategoryPosts(categoryId.value)
     await fetchCategories()
-    await fetchPostsByCategory(categorySlug.value)
-    await fetchFeaturedPostsByCategory(category.value.id)
-    await countCategoryPosts(categorySlug.value)
-    await fetchTagCountsByCategory(category.value.id)
 
-
-    //await processData()
-    //await countTags()
-
+    /*
+    
+    
+    
+    
+    
+    */
 
     loaded.value = true;
     window.scrollTo(0, 0);

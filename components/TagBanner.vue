@@ -4,9 +4,6 @@ defineProps({
     tag: {
         type: Object,
         required: true,
-        validator: (value) => {
-            return value.name && value.banner_image?.id
-        }
     }
 })
 
@@ -15,14 +12,14 @@ defineProps({
 <template>
     <div class="category-banner">
         <!-- Responsive Image with different sizes for different screens -->
-        <NuxtImg :src="tag.banner_image?.id ? tag.banner_image.id : '310dc800-3921-43ce-86a2-a8f2b2d42f2f'" provider="directus" :placeholder="[50, 25, 75]" loading="lazy"
+        <NuxtImg :src="tag.banner_image?.id ? tag.banner_image.id : '649ba7ca-4874-4dde-a18b-d4026a94265e'" provider="directus" :placeholder="[50, 25, 75]" loading="lazy"
             class="banner-image" :alt="tag.id"
             quality="70"
             sizes="100vw sm:400px md:600px lg:1500px xl:2000px "/>
 
         <!-- Text overlay centered on image -->
         <div class="text-overlay">
-            <h1 class="banner-title">Tag: {{ tag.id }}</h1>
+            <h1 class="banner-title">Tag: {{ deslugify(tag.id) }}</h1>
             <p v-if="tag.description" class="banner-description">
                 Category : {{ tag.description }}
             </p>

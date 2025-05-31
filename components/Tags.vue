@@ -8,17 +8,22 @@
                     Todos
                 </span>
             </Badge>
-
-            
-
-            <!--{{ tags }}-->
-
              
             <Badge v-for="tag in tags" :key="tag.id" :variant="selectedTag === tag.id ? 'default' : 'primary'"
                 class="cursor-pointer transition-colors hover:opacity-80" @click="handleTagClick(tag.id)">
-                <NuxtLink :to="categorySlug ?`/category/${categorySlug}/${slugify(tag.id)}` : `/tags/${slugify(tag.id)}` ">
+
+                <NuxtLink v-if="isModel" :to="categorySlug ? `/models/category/${categorySlug}/${slugify(tag.id)}` : `/models/tags/${slugify(tag.id)}` ">
                     {{ tag.id }} {{ tag.count ? `(${tag.count})` : '' }}
                 </NuxtLink>
+
+                <NuxtLink v-else :to=" categorySlug ? `/posts/category/${categorySlug}/${slugify(tag.id)}` : `/posts/tags/${slugify(tag.id)}`">
+                    {{ tag.id }} {{ tag.count ? `(${tag.count})` : '' }}
+                </NuxtLink>
+
+                <!--
+                <NuxtLink :to="categorySlug ?`/category/${categorySlug}/${slugify(tag.id)}` : `/tags/${slugify(tag.id)}` ">
+                    {{ tag.id }} {{ tag.count ? `(${tag.count})` : '' }}
+                </NuxtLink>-->
             </Badge>
             
         </div>
@@ -47,7 +52,11 @@ const props = defineProps({
         default: false
     }*/
    categorySlug:{
-    type: String
+    type: String,
+    required : true
+   },isModel:{
+    type:Boolean,
+    default:false
    }
 })
 

@@ -52,7 +52,7 @@ const formatDate = (dateString: string) => {
 <template>
     <Card class="overflow-hidden h-full flex flex-col hover:shadow-lg transition-shadow duration-300 w-12/12 ">
 
-        <NuxtLink :to="`/models/${model.id}/${model.slug || slugify(model.name)}`">
+        <NuxtLink :to="`/models/${model.slug || slugify(model.name)}`">
             <div class="overflow-hidden h-96 md:h-96"> <!--:style="`height: ${img_height}`"-->
                 <NuxtImg :src="model.image?.id ? `${model.image.id}` : '2df8b198-befd-4aa5-87cb-49f7da84b604'"
                     quality="70" :width="img_width" provider="directus" loading="lazy"
@@ -82,7 +82,7 @@ const formatDate = (dateString: string) => {
 
         <CardContent class="pt-0" v-if="!minimal">
             <div class="flex flex-wrap gap-1">
-                <TagsComponent :tags="model.tags" isModel="true" />
+                <TagsComponent :tags="model.tags" :isModel="true" />
                 <!--
                 <span v-for="tag in model.tags" :key="tag.model_tags_id"
                     class="text-xs px-2 py-1 bg-muted rounded-full">
@@ -93,7 +93,7 @@ const formatDate = (dateString: string) => {
         </CardContent>
 
         <CardFooter class="pt-0">
-            <NuxtLink :to="`/models/${model.id}/${model.slug || slugify(model.name)}`"
+            <NuxtLink :to="`/models/${model.slug || slugify(model.name)}`"
                 class="text-sm font-medium text-primary hover:underline">
                 Ver más →
             </NuxtLink>
