@@ -1,14 +1,14 @@
 <template>
     <div class="group relative bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all duration-300">
         <!--{{ image }}-->
-        <NuxtImg :src="image.url" :alt="image.alt || image.gallery?.name || 'latina model'"
+        <NuxtImg :src="`https://square-night-b2b6.moton8n.workers.dev/${image.url}`" :alt="image.alt || image.gallery?.title || 'latina model'"
             :fallback="image.fallback_url || '/placeholder.jpg'" class="w-full h-64 object-cover" loading="lazy" />
        
         <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
 
-            <NuxtLink v-if="image.gallery" :to="`/gallery/${image.gallery.id}/${slugify(image.gallery.name)}`"
+            <NuxtLink v-if="image.gallery" :to="`/gallery/${image.gallery.id}/${slugify(image.gallery.title)}`"
                 class="text-white font-semibold text-md hover:underline">
-                {{ image.gallery?.name }}
+                {{ image.gallery?.title }}
             </NuxtLink>
       
             <div v-if="image.tags && image.tags.length > 0" class="flex flex-wrap gap-2 mt-2">

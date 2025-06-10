@@ -14,7 +14,7 @@ const props = defineProps({
         required: true,
         default: () => ({
             name: 'No name',
-            bio: 'No bio',
+            details: 'No bio',
             image: null,
             date_created: '',
             category: null,
@@ -69,26 +69,20 @@ const formatDate = (dateString: string) => {
                 </NuxtLink>
             </div>
             <div>
-                <span v-if="model.age" class="text-xs text-muted-foreground">
-                    {{ calculateAge(model.age) }} años
+                <span v-if="model.birthdate" class="text-xs text-muted-foreground">
+                    {{ calculateAge(model.birthdate) }} yo
                 </span>
                 <span v-if="model.country" class="text-xs text-muted-foreground">
                     • {{ model.country }}
                 </span>
             </div>
             <CardTitle class="text-sm md:text-base lg:text-base xl:text-base line-clamp-2">{{ model.name }}</CardTitle>
-            <CardDescription v-if="!minimal" class="line-clamp-3">{{ model.bio }}</CardDescription>
+            <CardDescription v-if="!minimal && model.details" class="line-clamp-3">{{ model.details && model.details.length<90 ? model.details : model.details.slice(0,90) + '... ' }}</CardDescription>
         </CardHeader>
 
         <CardContent class="pt-0" v-if="!minimal">
             <div class="flex flex-wrap gap-1">
                 <TagsComponent :tags="model.tags" :isModel="true" />
-                <!--
-                <span v-for="tag in model.tags" :key="tag.model_tags_id"
-                    class="text-xs px-2 py-1 bg-muted rounded-full">
-                    {{ tag.model_tags_id }}
-                </span>-->
-
             </div>
         </CardContent>
 

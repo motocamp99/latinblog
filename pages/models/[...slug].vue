@@ -3,13 +3,11 @@
     <div style="margin-top: 60px !important;">
 
         <div v-if="loaded">
-        
+            
             <div v-if="model.status === 'published'">
-
                 
                 <ModelDetails :model="model" :loaded="loaded" />
-              
-    
+
                 <div class="border-b border-gray-200">
                     <nav class="flex space-x-8 px-6 gap-2">
                         <button v-for="tab in tabs" :key="tab.id" @click="activeTab = tab.id" :class="[
@@ -22,15 +20,14 @@
                         </button>
                     </nav>
                 </div>
-                
-               
+
                 <div class="p-6">
                     <div v-show="activeTab === 'images'">
-                        <ModelImages :images="images" v-if="images" />
+                        <ModelImages />
                     </div>
-                     
+                    
                     <div v-show="activeTab === 'galleries'">
-                       <GalleriesGrid v-if="galleries && galleries.length!==0" :galleries="galleries" />
+                        <ModelGalleries />
                     </div>
 
                     <div v-show="activeTab === 'compilations'">
@@ -38,16 +35,14 @@
                             <p>Compilations coming soon</p>
                         </div>
                     </div>
-            
                 </div>
-               
+             
             </div>
-
+             
             <div v-else>
                 Coming Soon
-            </div>
+            </div> 
 
-        
         </div>
         <div v-else class="flex justify-center items-center h-64">
             <svg class="animate-spin h-8 w-8 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none"
@@ -65,7 +60,6 @@
 </template>
 
 
-
 <script setup>
 
 const route = useRoute()
@@ -74,16 +68,17 @@ const slug = route.params.slug ? route.params.slug[0] : ''
 const loaded = ref(false)
 let model = ref({})
 const galleries = ref([])
-const images = ref([])
+//const images = ref([])
 
 const activeTab = ref('images')
 
 const tabs = [
-  { id: 'images', name: 'Images' },
-  { id: 'galleries', name: 'Galleries' },
-  { id: 'compilations', name: 'Compilations' }
+    { id: 'images', name: 'Images' },
+    { id: 'galleries', name: 'Galleries' },
+    { id: 'compilations', name: 'Compilations' }
 ]
 //const activeTab = 'images'
+
 
 const fetchModelBySlug = async (slug) => {
 
@@ -95,7 +90,6 @@ const fetchModelBySlug = async (slug) => {
                   }
               `
         const response = await fetch(
-
             `https://latin.dedyn.io/items/models?fields=*.*&filter=${query}&limit=1&offset=0`,
             {
                 method: 'GET',
@@ -107,72 +101,59 @@ const fetchModelBySlug = async (slug) => {
         if (!response.ok) throw new Error('Failed to fetch info data');
         const result = await response.json();
         model.value = result.data[0]
-        
-
     } catch (error) {
         console.log('error', error)
     }
-
 }
+
+/*
 
 
 const fetchGalleriesBySlug = async (slug) => {
+    try {
+        const filter = {
+            model: {
+                slug: {
+                    _eq: slug
+                }
+            },
+            status: {
+                _eq: 'published'
+            }
+        };
 
-    const url = `https://latin.dedyn.io/items/galleries/?fields=name,id,tags.*,image.*&filter[model][slug][_eq]=${slug}`
+        const queryParams = new URLSearchParams({
+            fields: 'title,id,tags.*,image.*,cover_image',
+            filter: JSON.stringify(filter)
+        });
 
-    const response = await fetch(
+        const url = `https://latin.dedyn.io/items/galleries?${queryParams.toString()}`;
 
-        url,
-        {
+        const response = await fetch(url, {
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json',
-            },
-        }
-    );
-    if (!response.ok) throw new Error('Failed to fetch info data');
-    const result = await response.json();
-    console.log('galleries results', result)
-    galleries.value = result.data
+                'Content-Type': 'application/json'
+            }
+        });
 
-}
+        if (!response.ok) throw new Error('Failed to fetch galleries');
 
-const fetchImagesBySlug = async (slug) => {
+        const result = await response.json();
+        console.log('✅ galleries results', result);
+        galleries.value = result.data;
 
-    const url = `https://latin.dedyn.io/items/images?fields=url,fallback_url,status,alt,gallery.id,gallery.name,tags.*&filter[model][slug][_eq]=${slug}`
-    //const url=`https://latin.dedyn.io/items/images?fields=*.*&filter[model][id][_eq]=${id}`
-
-    const response = await fetch(
-
-        url,
-        {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        }
-    );
-    if (!response.ok) throw new Error('Failed to fetch info data');
-    const result = await response.json();
-    console.log('images rresults', result)
-    images.value = result.data
-
-}
+    } catch (error) {
+        console.error('❌ error fetching galleries by slug', error);
+    }
+};
+*/
 
 onMounted(async () => {
 
-    //await fetchCategories()
-
     await fetchModelBySlug(slug)
-    await fetchGalleriesBySlug(slug)
-    await fetchImagesBySlug(slug)
+    //await fetchGalleriesBySlug(slug)
+    //await fetchImagesBySlug(slug)
 
-    /*
-    await fetchModel(id)
-    
-    
-
-    */
     loaded.value = true
 
 })
