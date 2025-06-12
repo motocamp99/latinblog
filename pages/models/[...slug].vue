@@ -8,7 +8,7 @@
                 
                 <ModelDetails :model="model" :loaded="loaded" />
 
-                <div class="border-b border-gray-200">
+                <div class="border-b border-gray-200 mt-6">
                     <nav class="flex space-x-8 px-6 gap-2">
                         <button v-for="tab in tabs" :key="tab.id" @click="activeTab = tab.id" :class="[
                             'py-4 px-1 border-b-2 font-medium text-sm',

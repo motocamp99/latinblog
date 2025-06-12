@@ -205,20 +205,6 @@ const fetchArticle = async (id) => {
 
     console.log('resulted article', result.data)
     article.value = result.data
-
-    /*
-    article.value=result.data
-    if(article.value.gallery_images){
-
-        articleImages.value=article.value.gallery_images.map(elem=>elem.directus_files_id)
-        console.log('cat images',articleImages.value )
-        console.log('raw', article.value.gallery_images )
-    }
-
-    //console.log('resulted article', result.data)
-    //console.log('gallll', articleImages.value.map(elem=>elem.directus_files_id))
-    */
-
 }
 
 /*

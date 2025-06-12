@@ -29,7 +29,7 @@
 
 
         <CardContent class="pt-0 pb-0 px-1 md:px-6 " v-if="!minimal">
-            <TagsComponent :tags="article.tags || []" />
+            <TagsComponent :tags="article.tags || []" :isPost="true" />
         </CardContent>
 
 

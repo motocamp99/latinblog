@@ -5,9 +5,9 @@
                 class="group relative bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all duration-300">
 
                 <NuxtImg
-                    :src="gallery.cover_image ? `https://square-night-b2b6.moton8n.workers.dev/${gallery.cover_image}` : 'https://latin.dedyn.io/assets/29b87019-62c4-4601-baf0-8feced4d00e6'"
+                    :src="gallery.cover_image ? `https://${baseCDN}/${gallery.cover_image} `: `https://${baseUrl}/assets/29b87019-62c4-4601-baf0-8feced4d00e6`"
                     :alt="gallery.title || 'latina model'"
-                    :fallback="'https://latin.dedyn.io/assets/29b87019-62c4-4601-baf0-8feced4d00e6'"
+                    :fallback="`https://${baseUrl}/assets/29b87019-62c4-4601-baf0-8feced4d00e6`"
                     class="w-full h-96 object-cover object-top" loading="lazy" />
 
                 <div
@@ -69,6 +69,9 @@ const ITEMS_PER_PAGE = 4
 const currentPage = ref(1)
 const MAX_VISIBLE_PAGES = 5
 
+const baseUrl = 'latin.dedyn.io'
+const baseCDN = 'square-night-b2b6.moton8n.workers.dev'
+
 const fetchGalleriesBySlug = async (slug, page = 1) => {
     try {
         const offset = (page - 1) * ITEMS_PER_PAGE
@@ -91,7 +94,7 @@ const fetchGalleriesBySlug = async (slug, page = 1) => {
             offset: offset
         });
 
-        const url = `https://latin.dedyn.io/items/galleries?${queryParams.toString()}`;
+        const url = `https://${baseUrl}/items/galleries?${queryParams.toString()}`;
 
         const response = await fetch(url, {
             method: 'GET',
@@ -131,7 +134,7 @@ const countGalleries = async (slug) => {
         });
 
         const response = await fetch(
-            `https://latin.dedyn.io/items/galleries?${queryParams.toString()}`,
+            `https://${baseUrl}/items/galleries?${queryParams.toString()}`,
             {
                 method: 'GET',
                 headers: {

@@ -40,13 +40,13 @@
         <!-- Biography / Details -->
         <div v-if="model.details" class="mb-8">
             <h2 class="text-2xl font-semibold text-gray-800 mb-3">Bio</h2>
-            <p class="text-gray-700 whitespace-pre-line">{{ model.details }}</p>
+            <p class="text-sm">{{ model.details }}</p>
         </div>
 
         <!-- Aliases -->
         <div v-if="model.alias_list?.length" class="mb-8">
             <h2 class="text-xl font-semibold text-gray-800 mb-2">Aliases</h2>
-            <ul class="list-disc list-inside text-gray-600">
+            <ul class="list-disc list-inside text-sm">
                 <li v-for="alias in model.alias_list" :key="alias">{{ alias }}</li>
             </ul>
         </div>
@@ -57,7 +57,7 @@
             <h2 class="text-xl font-semibold text-gray-800 mb-2">Social Media</h2>
             <div class="flex flex-wrap gap-4">
                 <a v-for="(url, index) in model.urls" :key="index" :href="url" target="_blank" rel="noopener noreferrer"
-                    class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm text-blue-600">
+                    class="px-1 py-1 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm text-blue-600">
                     {{ cleanUrl(url) }}
                 </a>
             </div>

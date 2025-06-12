@@ -1,68 +1,79 @@
 <template>
-  <section>
-    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-      <div v-for="(image, index) in images" :key="image.url + index"
-        class="group relative bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all duration-300">
-        <!--{{ image }}-->
-        <NuxtImg :src="`https://square-night-b2b6.moton8n.workers.dev/${image.url}`"
-          :alt="image.alt || image.gallery?.title || 'latina model'"
-          :fallback="image.fallback_url || '/placeholder.jpg'" class="w-full h-64 object-cover" loading="lazy" />
+    <section>
 
-        <div
-          class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+        <section class="my-5">
+            <ImagesCategoryCarousels :imageCategoryArrays="imageCategoryArrays" :baseCDN="baseCDN" />
+        </section>
 
-          <NuxtLink v-if="image.gallery" :to="`/gallery/${image.gallery.id}/${slugify(image.gallery.title)}`"
-            class="text-white font-semibold text-md hover:underline">
-            {{ image.gallery?.title }}
-          </NuxtLink>
+        <h2 class="text-xl font-semibold mb-2">All Images </h2>
 
-          <div v-if="image.tags && image.tags.length > 0" class="flex flex-wrap gap-2 mt-2">
-            <span v-for="(tag, index) in image.tags" :key="index"
-              class="px-2 py-1 bg-white/20 text-white text-xs rounded-full backdrop-blur-sm">
-              {{ tag.tags_id }}
-            </span>
-          </div>
+        <div class="flex flex-wrap gap-2 justify-start">
+            <div v-for="(image, index) in images" :key="image.url + index"
+                class="group relative bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 gallery-hoverable"
+                style="height: 400px; flex-grow: 1; flex-basis: auto" @click="openLightbox(index)">
+
+                <NuxtImg :src="`https://${baseCDN}/${image.url.replace(/^1280\//, '/460/')}`"
+                    :alt="image.alt || image.gallery?.title || 'latina model'"
+                    :fallback="image.fallback_url || '/placeholder.jpg'" class="h-full w-full object-cover object-top"
+                    loading="lazy" />
+
+                <div
+                    class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+                    <NuxtLink v-if="image.gallery" :to="`/gallery/${image.gallery.id}/${slugify(image.gallery.title)}`"
+                        class="text-white font-semibold text-xs hover:underline">
+                        {{ image.gallery?.title }}
+                    </NuxtLink>
+
+                    <div v-if="image.tags && image.tags.length > 0" class="flex flex-wrap gap-2 mt-2">
+                        <TagsComponent :tags="image.tags" :isImage="true" />
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
 
-    <nav aria-label="Page navigation" class="mt-8 mb-12">
-      <ul class="flex justify-center lg:justify-start flex-wrap gap-1">
-        <li>
-          <Button variant="outline" @click="changePage(1)" :disabled="currentPage === 1">
-            Primero
-          </Button>
-        </li>
-        <li>
-          <Button variant="outline" @click="changePage(currentPage - 1)" :disabled="currentPage === 1">
-            Anterior
-          </Button>
-        </li>
-        <li v-for="page in visiblePages" :key="page">
-          <Button variant="outline" @click="changePage(page)" :class="{
-            'bg-primary text-primary-foreground': page === currentPage,
-          }">
-            {{ page }}
-          </Button>
-        </li>
-        <li>
-          <Button variant="outline" @click="changePage(currentPage + 1)" :disabled="currentPage === totalPages">
-            Siguiente
-          </Button>
-        </li>
-        <li>
-          <Button variant="outline" @click="changePage(totalPages)" :disabled="currentPage === totalPages">
-            Último
-          </Button>
-        </li>
-      </ul>
-    </nav>
+        <VueEasyLightbox :visible="visible" :imgs="lightboxImages" :index="lightboxIndex" @hide="handleHide" />
 
-  </section>
-
+        <nav aria-label="Page navigation" class="mt-8 mb-12">
+            <ul class="flex justify-center lg:justify-start flex-wrap gap-1">
+                <li>
+                    <Button variant="outline" @click="changePage(1)" :disabled="currentPage === 1"
+                        class="min-w-8 h-8 p-0 flex items-center justify-center">
+                        &laquo;
+                    </Button>
+                </li>
+                <li>
+                    <Button variant="outline" @click="changePage(currentPage - 1)" :disabled="currentPage === 1"
+                        class="min-w-8 h-8 p-0 flex items-center justify-center">
+                        &lsaquo;
+                    </Button>
+                </li>
+                <li v-for="page in visiblePages" :key="page">
+                    <Button variant="outline" @click="changePage(page)" :class="{
+                        'bg-primary text-primary-foreground': page === currentPage,
+                    }" class="min-w-8 h-8 p-0 flex items-center justify-center">
+                        {{ page }}
+                    </Button>
+                </li>
+                <li>
+                    <Button variant="outline" @click="changePage(currentPage + 1)"
+                        :disabled="currentPage === totalPages" class="min-w-8 h-8 p-0 flex items-center justify-center">
+                        &rsaquo;
+                    </Button>
+                </li>
+                <li>
+                    <Button variant="outline" @click="changePage(totalPages)" :disabled="currentPage === totalPages"
+                        class="min-w-8 h-8 p-0 flex items-center justify-center">
+                        &raquo;
+                    </Button>
+                </li>
+            </ul>
+        </nav>
+    </section>
 </template>
 
 <script setup>
+import { ref, computed, onMounted } from 'vue'
+import VueEasyLightbox from 'vue-easy-lightbox'
 
 const route = useRoute()
 const slug = route.params.slug ? route.params.slug[0] : ''
@@ -70,150 +81,195 @@ const loaded = ref(false)
 const images = ref([])
 const totalImages = ref(0)
 
-const ITEMS_PER_PAGE = 4
-const currentPage = ref(1);
-const MAX_VISIBLE_PAGES = 5;
+const ITEMS_PER_PAGE = 20
+const currentPage = ref(1)
+const MAX_VISIBLE_PAGES = 5
+const baseUrl = 'latin.dedyn.io'
+const baseCDN = 'square-night-b2b6.moton8n.workers.dev'
+const SOFT_LIMIT = 600
+const softImages = ref([])
+
+const CATEGORY_TAGS = ['Clothed', 'Lingerie', 'Nude', 'Lesbian']
 
 
-const fetchImagesBySlug = async (slug , page) => {
+// Lightbox state
 
-  try {
 
-    const offset = (page - 1) * ITEMS_PER_PAGE;
+const imageCategoryArrays = ref([])
 
+const visible = ref(false)
+const lightboxIndex = ref(0)
+
+const openLightbox = (idx) => {
+    lightboxIndex.value = idx
+    visible.value = true
+}
+
+const handleHide = () => {
+    visible.value = false
+}
+
+const lightboxImages = computed(() =>
+    images.value.map((img) =>
+        `https://${baseCDN}/${img.url}` // use original full image path
+    )
+)
+
+const fetchImagesBySlug = async (slug, page) => {
+    const offset = (page - 1) * ITEMS_PER_PAGE
     const filter = {
-      model: {
-        slug: {
-          _eq: slug
+        model: { slug: { _eq: slug } },
+        status: { _eq: 'published' },
+        tags: {
+            _some: {
+                global_tags_id: {
+                    name: {
+                        _eq: "Softcore"
+                    }
+                }
+            }
         }
-      },
-      status: {
-        _eq: 'published'
-      }
-    };
-
-    //limit=${ITEMS_PER_PAGE}&offset=${offset}
+    }
 
     const queryParams = new URLSearchParams({
-      fields: 'url,fallback_url,status,alt,gallery.id,gallery.title,tags.*',
-      filter: JSON.stringify(filter),
-      limit: ITEMS_PER_PAGE,
-      offset : offset
-    });
+        fields: 'url,fallback_url,status,alt,gallery.id,gallery.title,tags.global_tags_id.*',
+        filter: JSON.stringify(filter),
+        limit: ITEMS_PER_PAGE,
+        offset
+    })
 
-    const url = `https://latin.dedyn.io/items/images?${queryParams.toString()}`;
+    const url = `https://${baseUrl}/items/images?${queryParams.toString()}`
+    const response = await fetch(url, { headers: { 'Content-Type': 'application/json' } })
+    const result = await response.json()
+    console.log('images', result)
 
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
+    currentPage.value = page
+    images.value = result.data
+}
 
-    if (!response.ok) throw new Error('Failed to fetch galleries');
+const fetchSoftImagesBySlug = async (slug) => {
 
-    const result = await response.json();
-    console.log('✅ images results', result);
-    currentPage.value = page;
-    images.value = result.data;
+    const filter = {
+        model: { slug: { _eq: slug } },
+        status: { _eq: 'published' },
+        tags: {
+            _some: {
+                global_tags_id: {
+                    name: {
+                        _eq: "Softcore"
+                    }
+                }
+            }
+        }
+    }
 
-  } catch (error) {
-    console.error('❌ error fetching images by performer', error);
-  }
+    const queryParams = new URLSearchParams({
+        fields: 'url,fallback_url,status,alt,gallery.id,gallery.title,tags.global_tags_id.*',
+        filter: JSON.stringify(filter),
+        limit: SOFT_LIMIT,
+    })
+
+    const url = `https://${baseUrl}/items/images?${queryParams.toString()}`
+    const response = await fetch(url, { headers: { 'Content-Type': 'application/json' } })
+    const result = await response.json()
+    console.log('soft images', result)
+    console.log('soft images', result.data.length)
+
+    softImages.value = result.data
 }
 
 
+
+const buildImageCategoryArrays = () => {
+    const categoryMap = {}
+
+    CATEGORY_TAGS.forEach((tag) => {
+        categoryMap[tag] = []
+    })
+
+    for (const img of softImages.value) {
+        if (!img.tags) continue
+
+        const tagNames = img.tags.map((t) => t.global_tags_id?.name)
+
+        CATEGORY_TAGS.forEach((category) => {
+            if (tagNames.includes(category)) {
+                categoryMap[category].push(img)
+            }
+        })
+    }
+
+    imageCategoryArrays.value = CATEGORY_TAGS
+        .map((tag) => ({
+            name: tag,
+            images: categoryMap[tag],
+        }))
+        .filter((cat) => cat.images.length > 0)
+}
+
 const countImages = async (slug) => {
-  try {
     const filter = {
-      model: {
-        slug: {
-          _eq: slug
+        model: { slug: { _eq: slug } },
+        status: { _eq: 'published' },
+        tags: {
+            _some: {
+                global_tags_id: {
+                    name: {
+                        _eq: "Softcore"
+                    }
+                }
+            }
         }
-      },
-      status: {
-        _eq: 'published'
-      }
-    };
+    }
 
     const queryParams = new URLSearchParams({
-      'aggregate[count]': '*',
-      filter: JSON.stringify(filter)
-    });
+        'aggregate[countDistinct]': 'id',
+        filter: JSON.stringify(filter)
+    })
 
     const response = await fetch(
-      `https://latin.dedyn.io/items/images?${queryParams.toString()}`,
-      {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    );
+        `https://${baseUrl}/items/images?${queryParams.toString()}`,
+        { headers: { 'Content-Type': 'application/json' } }
+    )
 
-    if (!response.ok) throw new Error('Failed to count images');
+    const result = await response.json()
+    totalImages.value = result.data[0].countDistinct.id
+}
 
-    const result = await response.json();
-
-    totalImages.value = result.data[0].count;
-
-  } catch (error) {
-    console.error('Error counting images for model:', error);
-  }
-};
-
-
-const totalPages = computed(() => Math.ceil(totalImages.value / ITEMS_PER_PAGE));
+const totalPages = computed(() => Math.ceil(totalImages.value / ITEMS_PER_PAGE))
 
 const visiblePages = computed(() => {
-  const pages = [];
-  let startPage = 1;
-  let endPage = totalPages.value;
-
-  if (totalPages.value > MAX_VISIBLE_PAGES) {
-    const half = Math.floor(MAX_VISIBLE_PAGES / 2);
-    startPage = Math.max(1, currentPage.value - half);
-    endPage = Math.min(totalPages.value, currentPage.value + half);
-
-    if (endPage - startPage + 1 < MAX_VISIBLE_PAGES) {
-      if (currentPage.value < totalPages.value / 2) {
-        endPage = Math.min(totalPages.value, startPage + MAX_VISIBLE_PAGES - 1);
-      } else {
-        startPage = Math.max(1, endPage - MAX_VISIBLE_PAGES + 1);
-      }
-    }
-  }
-
-  for (let i = startPage; i <= endPage; i++) {
-    pages.push(i);
-  }
-
-  return pages;
-});
-
-// Change page handler
-const changePage = (page) => {
-  if (page > 0 && page <= totalPages.value && page !== currentPage.value) {
-    //fetchModels(page);
-    fetchImagesBySlug(slug , page)
-    //window.scrollTo({ top: 3000, behavior: 'smooth' });
-  }
-
-  console.log('page', page)
-};
-
-
-
-onMounted(async () => {
-
-  await fetchImagesBySlug(slug , currentPage.value)
-  await countImages(slug)
-
-  console.log('total images', totalImages.value)
-  loaded.value = true
-
+    const pages = []
+    let start = Math.max(1, currentPage.value - 2)
+    let end = Math.min(totalPages.value, start + MAX_VISIBLE_PAGES - 1)
+    for (let i = start; i <= end; i++) pages.push(i)
+    return pages
 })
 
+const changePage = (page) => {
+    if (page > 0 && page <= totalPages.value && page !== currentPage.value) {
+        fetchImagesBySlug(slug, page)
+    }
+}
 
+onMounted(async () => {
+    await fetchImagesBySlug(slug, currentPage.value)
+    await countImages(slug)
+    await fetchSoftImagesBySlug(slug)
+    buildImageCategoryArrays()
 
+    /*
+    console.log('softimgs', softImages.value)
+    console.log('softimgs', softImages.value.length)*/
+
+    console.log('imgcatarr', imageCategoryArrays.value)
+
+    loaded.value = true
+})
 </script>
+
+<style scoped>
+.gallery-hoverable {
+    cursor: zoom-in;
+}
+</style>
