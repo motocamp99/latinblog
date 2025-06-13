@@ -22,13 +22,23 @@
                 </div>
 
                 <div class="p-6">
-                    <div v-show="activeTab === 'images'">
-                        <ModelImages />
+                    <div v-show="activeTab === 'soft-images'">
+                        <ModelImages imgType="Softcore" :categoryTags="softImageTags"  />
                     </div>
                     
-                    <div v-show="activeTab === 'galleries'">
-                        <ModelGalleries />
+                    <div v-show="activeTab === 'soft-galleries'">
+                        <ModelGalleries imgType="Softcore" :categoryTags="softGalleryTags" />
                     </div>
+
+                   
+                    <div v-show="activeTab === 'hard-images'">
+                        <ModelImages imgType="Hardcore" :categoryTags="hardImageTags"  />
+                    </div>
+                    
+                    <div v-show="activeTab === 'hard-galleries'">
+                        <ModelGalleries imgType="Hardcore" :categoryTags="hardGalleryTags" />
+                    </div>
+                   
 
                     <div v-show="activeTab === 'compilations'">
                         <div class="text-center py-12 text-gray-500">
@@ -68,13 +78,21 @@ const slug = route.params.slug ? route.params.slug[0] : ''
 const loaded = ref(false)
 let model = ref({})
 const galleries = ref([])
+
+const softImageTags=['Clothed', 'Lingerie', 'Nude', 'Lesbian']
+const softGalleryTags=['Solo', 'Masturbation', 'Lesbian']
+const hardImageTags=['Preparing For Sex', 'Blowjob', 'Vaginal Sex', 'Anal Sex', 'Vaginal Penetration Closeup', 'Anal Penetration Closeup', 'Creampie', 'Facial', 'Group Sex', 'Group Sex Closeup']
+const hardGalleryTags=['Vaginal Sex', 'Anal Sex', 'Group Sex']
+
 //const images = ref([])
 
-const activeTab = ref('images')
+const activeTab = ref('soft-images')
 
 const tabs = [
-    { id: 'images', name: 'Images' },
-    { id: 'galleries', name: 'Galleries' },
+    { id: 'soft-images', name: 'Softcore Images' },
+    { id: 'soft-galleries', name: 'Softcore Galleries' },
+    { id: 'hard-images', name: 'Hardcore Images' },
+    { id: 'hard-galleries', name: 'Hardcore Galleries' },
     { id: 'compilations', name: 'Compilations' }
 ]
 //const activeTab = 'images'

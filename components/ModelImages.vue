@@ -1,11 +1,13 @@
 <template>
     <section>
 
+        
         <section class="my-5">
             <ImagesCategoryCarousels :imageCategoryArrays="imageCategoryArrays" :baseCDN="baseCDN" />
         </section>
 
-        <h2 class="text-xl font-semibold mb-2">All Images </h2>
+        <!--<h2 class="text-xl font-semibold mb-2">All Images </h2>-->
+        <h2 class="text-xl font-semibold mb-2">All {{ props.imgType }} Images </h2>
 
         <div class="flex flex-wrap gap-2 justify-start">
             <div v-for="(image, index) in images" :key="image.url + index"
@@ -68,6 +70,7 @@
                 </li>
             </ul>
         </nav>
+        
     </section>
 </template>
 
@@ -87,12 +90,13 @@ const MAX_VISIBLE_PAGES = 5
 const baseUrl = 'latin.dedyn.io'
 const baseCDN = 'square-night-b2b6.moton8n.workers.dev'
 const SOFT_LIMIT = 600
-const softImages = ref([])
-
-const CATEGORY_TAGS = ['Clothed', 'Lingerie', 'Nude', 'Lesbian']
+const carouselImages = ref([])
 
 
-// Lightbox state
+const props = defineProps({
+    imgType: { type: String, required: true },
+    categoryTags: { type: Array, required: true }
+});
 
 
 const imageCategoryArrays = ref([])
@@ -115,7 +119,7 @@ const lightboxImages = computed(() =>
     )
 )
 
-const fetchImagesBySlug = async (slug, page) => {
+const fetchImagesBySlug = async (slug, page, imgType ) => {
     const offset = (page - 1) * ITEMS_PER_PAGE
     const filter = {
         model: { slug: { _eq: slug } },
@@ -124,7 +128,7 @@ const fetchImagesBySlug = async (slug, page) => {
             _some: {
                 global_tags_id: {
                     name: {
-                        _eq: "Softcore"
+                        _eq: imgType
                     }
                 }
             }
@@ -141,13 +145,13 @@ const fetchImagesBySlug = async (slug, page) => {
     const url = `https://${baseUrl}/items/images?${queryParams.toString()}`
     const response = await fetch(url, { headers: { 'Content-Type': 'application/json' } })
     const result = await response.json()
-    console.log('images', result)
+    //console.log('images', result)
 
     currentPage.value = page
     images.value = result.data
 }
 
-const fetchSoftImagesBySlug = async (slug) => {
+const fetchCarouselImagesBySlug = async (slug, imgType) => {
 
     const filter = {
         model: { slug: { _eq: slug } },
@@ -156,7 +160,7 @@ const fetchSoftImagesBySlug = async (slug) => {
             _some: {
                 global_tags_id: {
                     name: {
-                        _eq: "Softcore"
+                        _eq: imgType
                     }
                 }
             }
@@ -172,34 +176,34 @@ const fetchSoftImagesBySlug = async (slug) => {
     const url = `https://${baseUrl}/items/images?${queryParams.toString()}`
     const response = await fetch(url, { headers: { 'Content-Type': 'application/json' } })
     const result = await response.json()
-    console.log('soft images', result)
-    console.log('soft images', result.data.length)
+    //console.log('images', result)
+    console.log('carousel images length', result.data.length)
 
-    softImages.value = result.data
+    carouselImages.value = result.data
 }
 
 
 
-const buildImageCategoryArrays = () => {
+const buildImageCategoryArrays = (categoryTags) => {
     const categoryMap = {}
 
-    CATEGORY_TAGS.forEach((tag) => {
+    categoryTags.forEach((tag) => {
         categoryMap[tag] = []
     })
 
-    for (const img of softImages.value) {
+    for (const img of carouselImages.value) {
         if (!img.tags) continue
 
         const tagNames = img.tags.map((t) => t.global_tags_id?.name)
 
-        CATEGORY_TAGS.forEach((category) => {
+        categoryTags.forEach((category) => {
             if (tagNames.includes(category)) {
                 categoryMap[category].push(img)
             }
         })
     }
 
-    imageCategoryArrays.value = CATEGORY_TAGS
+    imageCategoryArrays.value = categoryTags
         .map((tag) => ({
             name: tag,
             images: categoryMap[tag],
@@ -207,7 +211,7 @@ const buildImageCategoryArrays = () => {
         .filter((cat) => cat.images.length > 0)
 }
 
-const countImages = async (slug) => {
+const countImages = async (slug , imgType) => {
     const filter = {
         model: { slug: { _eq: slug } },
         status: { _eq: 'published' },
@@ -215,7 +219,7 @@ const countImages = async (slug) => {
             _some: {
                 global_tags_id: {
                     name: {
-                        _eq: "Softcore"
+                        _eq: imgType
                     }
                 }
             }
@@ -248,21 +252,20 @@ const visiblePages = computed(() => {
 
 const changePage = (page) => {
     if (page > 0 && page <= totalPages.value && page !== currentPage.value) {
-        fetchImagesBySlug(slug, page)
+        fetchImagesBySlug(slug, page , props.imgType)
     }
 }
 
 onMounted(async () => {
-    await fetchImagesBySlug(slug, currentPage.value)
-    await countImages(slug)
-    await fetchSoftImagesBySlug(slug)
-    buildImageCategoryArrays()
+    
+    await fetchImagesBySlug(slug, currentPage.value, props.imgType)
+    await countImages(slug, props.imgType)
+    await fetchCarouselImagesBySlug(slug , props.imgType)
+    console.log('props cat', props.categoryTags )
+    buildImageCategoryArrays(props.categoryTags)
 
-    /*
-    console.log('softimgs', softImages.value)
-    console.log('softimgs', softImages.value.length)*/
-
-    console.log('imgcatarr', imageCategoryArrays.value)
+    
+    //console.log('props', props.categoryTags )
 
     loaded.value = true
 })

@@ -1,7 +1,7 @@
 <template>
     <div>
         <div v-for="(category, catIndex) in imageCategoryArrays" :key="catIndex" class="mb-10">
-            <h2 class="text-xl font-semibold mb-2">{{ category.name }}</h2>
+            <h2 class="category-title text-xl font-semibold mb-2 ps-0 md:ps-5">{{ category.name }}</h2>
 
             <Splide :options="options" aria-label="Image Category Carousel">
                 <SplideSlide v-for="(chunk, slideIndex) in chunkImages(category.images)" :key="slideIndex">
@@ -9,6 +9,8 @@
                         <div v-for="(image, indexInChunk) in chunk" :key="image.url + slideIndex + indexInChunk"
                             class="group relative bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 cursor-zoom-in image-tile-container"
                             @click="openLightbox(category.name, getAbsoluteImageIndex(category, slideIndex, indexInChunk))">
+
+                           <!-- {{ image }} -->
 
                             <NuxtImg :src="`https://${baseCDN}/${image.url.replace(/^1280\//, '460/')}`"
                                 :alt="image.alt || image.gallery?.title || 'model image'"
@@ -27,10 +29,6 @@
                                 </div>
                             </div>
                         </div>
-                        <template v-if="chunk.length > 0">
-                            <div v-for="n in calculateDummyCount(chunk.length, 5)" :key="`dummy-${slideIndex}-${n}`"
-                                class="image-tile-dummy"></div>
-                        </template>
                     </div>
                 </SplideSlide>
             </Splide>
@@ -72,22 +70,6 @@ function chunkImages(images) {
     }
     return chunks
 }
-
-const calculateDummyCount = (currentChunkLength, idealPerRow) => {
-    if (currentChunkLength === 0) return 0;
-
-    if (currentChunkLength <= idealPerRow) {
-        return idealPerRow - currentChunkLength;
-    }
-
-    const remainder = currentChunkLength % idealPerRow;
-    if (remainder > 0) {
-        return idealPerRow - remainder;
-    }
-
-    return 0;
-};
-
 
 const getAbsoluteImageIndex = (category, slideIndex, indexInChunk) => {
     return (slideIndex * CHUNK_SIZE) + indexInChunk;
@@ -132,43 +114,25 @@ function slugify(text) {
 /* Main container for images within a Splide slide */
 .image-carousel-grid {
     display: flex;
-    /* Tailwind: flex */
     flex-wrap: wrap;
-    /* Tailwind: flex-wrap */
     gap: 0.5rem;
-    /* Tailwind: gap-2 */
-    justify-content: space-between;
-    /* Tailwind: justify-between */
+   /*justify-content: space-between;*/
+   justify-content: start;
+
 }
 
-/* Base styles for the image tile container (not directly related to hover functionality) */
-/* The 'group' class for Tailwind's hover variant is applied directly in the template. */
 .image-tile-container {
     height: 400px;
-    /* Fixed height for all containers */
-
     flex-grow: 1;
-    /* Allow items to grow and fill available space */
     flex-shrink: 1;
-    /* Allow items to shrink if needed (controlled by min-width) */
-    flex-basis: auto;
-    /* Allows width to be determined by content initially, then stretch */
-
-    /*min-width: 180px;*/
-    /* Minimum width for images. Adjust as needed. */
-
+    flex-basis:auto;
     position: relative;
-    /* CRITICAL for absolute positioning of the overlay */
     border-radius: 0.5rem;
-    /* Tailwind: rounded-lg */
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    /* Tailwind: shadow-md */
     overflow: hidden;
-    /* CRITICAL: Ensures the overlay is clipped to the container's bounds and rounded corners */
     transition: all 0.3s ease;
-    /* Tailwind: transition-all duration-300 */
     cursor: zoom-in;
-    /* Tailwind: cursor-zoom-in */
+    
 }
 
 .image-tile-container:hover {
@@ -179,35 +143,78 @@ function slugify(text) {
 /* Styles for the NuxtImg component */
 .image-tile {
     height: 100%;
-    /* Tailwind: h-full */
     width: 100%;
-    /* Tailwind: w-full */
     object-fit: cover;
-    /* Tailwind: object-cover */
     object-position: center top;
-    /* Tailwind: object-top (used center top for precision) */
     display: block;
-    /* Tailwind: block */
+
 }
 
-/* Styles for the dummy elements used to fill the last row */
-.image-tile-dummy {
-    flex-grow: 1;
-    flex-shrink: 1;
-    flex-basis: auto;
-    min-width: 180px;
+@media only screen and (max-width: 600px) {
 
-    height: 0;
-    margin: 0;
-    padding: 0;
-    visibility: hidden;
-    pointer-events: none;
+    .image-tile-container {
+        max-width: 100%;
+    }
 }
 
-/* Removed all explicit custom CSS definitions for Tailwind utility classes
-    like .absolute, .inset-0, .opacity-0, .group-hover\:opacity-100, etc.
-    These should solely be managed by Tailwind's compiled CSS.
+/* Small devices (portrait tablets and large phones, 600px and up) */
+@media only screen and (min-width: 600px) {
+    .image-tile-container {
+        max-width: 31%;
+    }
+}
+
+/* Medium devices (landscape tablets, 768px and up) */
+@media only screen and (min-width: 768px) {
+    .image-tile-container {
+        max-width: 25%;
+    }
+    .image-carousel-grid {
+        justify-content: space-around;
+    }
+
+}
+
+/* Large devices (laptops/desktops, 992px and up) */
+@media only screen and (min-width: 992px) {
+    .image-tile-container {
+        max-width: 18%;
+    }
+    .image-carousel-grid {
+        justify-content: space-between;
+    }
+
+}
+
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1200px) {
     
-    The classes are already applied directly in the HTML template.
-*/
+    .image-carousel-grid {
+        justify-content: start;
+        padding-left: 5vw;
+    }
+     .image-tile-container {
+       max-width: 15%;
+    }
+    .category-title{
+        padding-left: 5vw;
+    }
+
+}
+
+@media only screen and (min-width: 1400px) {
+    .image-carousel-grid {
+        justify-content: start;
+        padding-left: 1vw;
+    }
+     .image-tile-container {
+       max-width: 20%;
+    }
+    .category-title{
+        padding-left: 1vw;
+    }
+
+}
+
+
 </style>
